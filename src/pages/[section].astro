@@ -1,0 +1,37 @@
+---
+// Section index pages: /writing/, /projects/ and /experiments/.
+import type { GetStaticPaths } from 'astro';
+import Base from '../layouts/Base.astro';
+import { SECTIONS } from '../lib/manifest';
+import { formatDate, getSectionPages, isExternal, pageHref, sectionSlug, type Section } from '../lib/pages';
+
+export const getStaticPaths = (() =>
+  SECTIONS.map((section) => ({ params: { section: sectionSlug(section) }, props: { section } }))) satisfies GetStaticPaths;
+
+const { section } = Astro.props as { section: Section };
+const pages = await getSectionPages(section);
+---
+<Base title={`${section}: Matt Cooper-Wright`} fonts={['body']}>
+  <h1 class="mb-8 text-3xl font-semibold">{section}</h1>
+  {pages.length === 0 ? (
+    <p>Nothing here yet.</p>
+  ) : (
+    <ul class="grid gap-6">
+      {pages.map((page) => (
+        <li>
+          <a
+            href={pageHref(page)}
+            class="block"
+            {...(isExternal(page) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+          >
+            <span class="block font-semibold underline">{page.data.title}{isExternal(page) && ' ↗'}</span>
+            <time class="block text-sm text-neutral-600" datetime={page.data.date.toISOString().slice(0, 10)}>
+              {formatDate(page.data.date)}
+            </time>
+            <span class="block">{page.data.description}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
