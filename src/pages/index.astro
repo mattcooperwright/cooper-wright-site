@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { getMenuPages } from '../lib/pages';
+
+const pages = await getMenuPages();
+---
+<Base title="Matt Cooper-Wright">
+  <h1 class="mb-8 text-3xl font-semibold">Matt Cooper-Wright</h1>
+  <ul class="grid gap-4">
+    {pages.map((page) => (
+      <li>
+        <a href={`/${page.id}/`} class="block rounded p-4 border border-neutral-200" style={page.data.indexStyle}>
+          <span class="block font-semibold">{page.data.title}</span>
+          <span class="block">{page.data.description}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Base>
