@@ -1,17 +1,17 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../layouts/Base.astro';
-import { getVisiblePages, loadMdxPayload, type Page } from '../lib/pages';
+import { getBuildPages, loadMdxPayload, type Page } from '../lib/pages';
 
 export const getStaticPaths = (async () => {
-  const pages = await getVisiblePages();
+  const pages = await getBuildPages();
   return pages.map((page) => ({ params: { slug: page.id }, props: { page } }));
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page };
 const Content = await loadMdxPayload(page);
 ---
-<Base title={page.data.title} description={page.data.description}>
+<Base title={page.data.title} page={page}>
   <article class="[&_p]:mb-4">
     <h1 class="mb-6 text-3xl font-semibold">{page.data.title}</h1>
     <Content />
