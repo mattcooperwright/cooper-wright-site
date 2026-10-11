@@ -1,14 +1,22 @@
 ---
 import '../styles/global.css';
-import { getMenuPages } from '../lib/pages';
+import { getMenuGroups, isExternal, pageHref, type Page } from '../lib/pages';
 
 interface Props {
   title: string;
   description?: string;
+  page?: Page;
 }
 
-const { title, description } = Astro.props;
-const menu = await getMenuPages();
+const { page } = Astro.props;
+const title = page?.data.title ?? Astro.props.title;
+const description = page?.data.description ?? Astro.props.description;
+const image = page?.data.image ? new URL(page.data.image, Astro.site) : undefined;
+const noindex = page !== undefined && page.data.status !== 'published';
+const navTheme = page?.data.navTheme ?? 'auto';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const groups = await getMenuGroups();
 const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 <!doctype html>
@@ -18,27 +26,50 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:type" content={page ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    {image && <meta property="og:image" content={image} />}
+    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
   </head>
-  <body class="mx-auto max-w-3xl px-4 py-8 font-sans text-neutral-900 bg-white">
-    <header class="mb-12">
-      <nav aria-label="Main">
-        <ul class="flex flex-wrap gap-x-6 gap-y-2">
-          <li><a href="/" class="font-semibold">Home</a></li>
-          {menu.map((page) => (
-            <li>
-              <a
-                href={`/${page.id}/`}
-                aria-current={current === `/${page.id}` ? 'page' : undefined}
-                class="aria-[current=page]:underline"
-              >
-                {page.data.title}
-              </a>
-            </li>
-          ))}
-        </ul>
+  <body class="font-sans text-neutral-900 bg-white">
+    <header
+      data-nav-theme={navTheme}
+      class="mb-12 data-[nav-theme=light]:bg-white data-[nav-theme=light]:text-neutral-900 data-[nav-theme=dark]:bg-neutral-900 data-[nav-theme=dark]:text-white data-[nav-theme=auto]:dark:bg-neutral-900 data-[nav-theme=auto]:dark:text-white"
+    >
+      <nav aria-label="Main" class="mx-auto flex max-w-3xl flex-wrap gap-x-10 gap-y-4 px-4 py-6">
+        <a href="/" class="font-semibold">Home</a>
+        {groups.map((group) => (
+          <div>
+            <h2 class="mb-1 text-xs uppercase tracking-wide opacity-70">{group.label}</h2>
+            <ul class="grid gap-1">
+              {group.pages.map((item) => (
+                <li>
+                  {isExternal(item) ? (
+                    <a href={pageHref(item)} target="_blank" rel="noopener noreferrer">
+                      {item.data.title} <span aria-hidden="true">↗</span>
+                      <span class="sr-only">(opens in a new tab)</span>
+                    </a>
+                  ) : (
+                    <a
+                      href={pageHref(item)}
+                      aria-current={current === `/${item.id}` ? 'page' : undefined}
+                      class="aria-[current=page]:underline"
+                    >
+                      {item.data.title}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
     </header>
-    <main>
+    <main class="mx-auto max-w-3xl px-4 pb-12">
       <slot />
     </main>
   </body>
