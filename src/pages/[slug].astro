@@ -1,7 +1,14 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../layouts/Base.astro';
-import { getSlugRoutePages, loadMdxPayload, loadReactPayload, type Page } from '../lib/pages';
+import PostLayout from '../layouts/PostLayout.astro';
+import {
+  getSlugRoutePages,
+  loadMdPayload,
+  loadMdxPayload,
+  loadReactPayload,
+  type Page,
+} from '../lib/pages';
 
 export const getStaticPaths = (async () => {
   const pages = await getSlugRoutePages();
@@ -9,11 +16,17 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page };
+const { type } = page.data;
 // React pages without hydrate render to static HTML with no client JS.
-const Component = page.data.type === 'react' ? await loadReactPayload(page) : null;
-const Content = page.data.type === 'mdx' ? await loadMdxPayload(page) : null;
+const Component = type === 'react' ? await loadReactPayload(page) : null;
+const Content = type === 'mdx' ? await loadMdxPayload(page) : null;
+const md = type === 'md' ? await loadMdPayload(page) : null;
 ---
-{Component ? (
+{md ? (
+  <PostLayout page={page} markdown={md.rawContent()}>
+    <md.Content />
+  </PostLayout>
+) : Component ? (
   <Base title={page.data.title} page={page} fullBleed>
     <Component />
   </Base>

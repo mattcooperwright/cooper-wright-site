@@ -1,0 +1,79 @@
+---
+// Shell for html pages: a slim site bar above the payload in a sandboxed iframe.
+// It ships no JavaScript and loads no files of its own: the CSP below has no 'self',
+// and the srcdoc iframe inherits the same policy.
+import HeadMeta from '../components/HeadMeta.astro';
+import { getMenuGroups, isExternal, pageHref, type Page } from '../lib/pages';
+
+interface Props {
+  page: Page;
+  html: string;
+}
+
+const { page, html } = Astro.props;
+const groups = await getMenuGroups();
+
+const csp = [
+  "default-src 'none'",
+  "script-src https://cdnjs.cloudflare.com https://cdn.jsdelivr.net 'unsafe-inline'",
+  "style-src 'unsafe-inline' https://fonts.googleapis.com",
+  'font-src https://fonts.gstatic.com',
+  'img-src data: blob:',
+  "connect-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join('; ');
+---
+<!doctype html>
+<html lang="en" data-nav-theme={page.data.navTheme}>
+  <head>
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <HeadMeta title={page.data.title} description={page.data.description} page={page} />
+    <style is:inline>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        display: flex; flex-direction: column; height: 100dvh;
+        font: 13px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        --bar-bg: #fff; --bar-fg: #171717; --bar-line: #e5e5e5;
+      }
+      html[data-nav-theme="dark"] body { --bar-bg: #171717; --bar-fg: #fff; --bar-line: #404040; }
+      @media (prefers-color-scheme: dark) {
+        html[data-nav-theme="auto"] body { --bar-bg: #171717; --bar-fg: #fff; --bar-line: #404040; }
+      }
+      .bar {
+        display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px;
+        padding: 8px 16px; background: var(--bar-bg); color: var(--bar-fg);
+        border-bottom: 1px solid var(--bar-line);
+      }
+      .bar a { color: inherit; text-decoration: none; }
+      .bar a:hover, .bar a[aria-current="page"] { text-decoration: underline; }
+      .bar .home { font-weight: 600; }
+      .bar ul { display: contents; list-style: none; }
+      .bar .label { text-transform: uppercase; font-size: 11px; letter-spacing: .05em; opacity: .65; }
+      iframe { flex: 1; width: 100%; border: 0; display: block; }
+    </style>
+  </head>
+  <body>
+    <nav class="bar" aria-label="Main">
+      <a class="home" href="/">Home</a>
+      {groups.map((group) => (
+        <>
+          <span class="label">{group.label}</span>
+          <ul>
+            {group.pages.map((item) => (
+              <li>
+                {isExternal(item) ? (
+                  <a href={pageHref(item)} target="_blank" rel="noopener noreferrer">{item.data.title} ↗</a>
+                ) : (
+                  <a href={pageHref(item)} aria-current={item.id === page.id ? 'page' : undefined}>{item.data.title}</a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      ))}
+    </nav>
+    <iframe srcdoc={html} sandbox="allow-scripts" title={page.data.title}></iframe>
+  </body>
+</html>

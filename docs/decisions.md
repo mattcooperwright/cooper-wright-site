@@ -31,7 +31,7 @@ The menu has three sections, in this order: Writing, Projects and Experiments. A
 Adding an optional field keeps `schemaVersion` at 1. Renaming or removing a field needs `schemaVersion` 2, and the site must keep accepting version 1 manifests alongside it.
 
 ## 2026-10-11: No sitemap yet
-Unlisted and draft pages must stay out of any sitemap. When one is added, it should be built from `getListedPages()` in `src/lib/pages.ts`.
+Superseded by "Sitemap, RSS and site URL" below. Unlisted and draft pages must stay out of any sitemap. When one is added, it should be built from `getListedPages()` in `src/lib/pages.ts`.
 
 ## 2026-10-11: Open-licence replacements for commercial fonts
 The old site used four commercial typefaces. They were replaced with open-licence (OFL-1.1) families: Neue Haas Grotesk Display Pro became Inter, Plantin MT Pro became Newsreader, BR Cobane became Hanken Grotesk, and BR Segma became Outfit. Gasoek One, Sofia Sans, Rethink Sans and DM Sans were added alongside them.
@@ -45,3 +45,11 @@ I Am Sitting in a Room, Making Is Thinking and Cynefin for designers were ported
 ## 2026-10-11: Hydrated react pages use route shims
 React pages render to static HTML by default. Astro can only hydrate a component it imports statically, so a react page that needs client JavaScript sets `hydrate: true` and gets a short route shim in `src/pages/<slug>.astro`. Each hydrated page ships only its own code. Sitting in a Room (copy button) and Making Is Thinking (scroll-driven noise) are hydrated; Cynefin is static. Faux bold and italic stay off site-wide, so Gasoek One's bold text renders at its single regular weight.
 
+## 2026-10-11: Who may submit which page types
+Chat and machine senders may submit md, html and external pages only. mdx and react need a human pull request, because both execute code at build time. To keep md safe for those senders, raw HTML in an md payload fails the build: Markdown would otherwise pass it through, unsandboxed, onto the site's own origin.
+
+## 2026-10-11: Sandboxed shell for html pages
+html pages render inside a `srcdoc` iframe with `sandbox="allow-scripts"`, never `allow-same-origin`, so the payload gets an opaque origin. A CSP meta tag on the shell, inherited by the iframe, allows scripts from cdnjs and jsdelivr and inline, styles inline and from Google Fonts, fonts from gstatic, images from data: and blob:, and no connections. The policy has no `'self'`, so the shell styles its bar inline with system fonts and ships no JavaScript. html pages have their own route, `[sandboxed].astro`, so the site stylesheet never reaches them.
+
+## 2026-10-11: Sitemap, RSS and site URL
+The site URL is https://matt.cooper-wright.com. The sitemap is a small custom endpoint built from `getListedPages()`, because `@astrojs/sitemap` filters without access to page status. The RSS feed uses `@astrojs/rss` and lists published Writing pages.

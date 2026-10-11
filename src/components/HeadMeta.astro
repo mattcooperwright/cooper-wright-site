@@ -1,0 +1,29 @@
+---
+// Head tags shared by Base and HtmlShell: title, description, canonical, share and feed links.
+import type { Page } from '../lib/pages';
+
+interface Props {
+  title: string;
+  description?: string;
+  page?: Page;
+}
+
+const { title, description, page } = Astro.props;
+const image = page?.data.image ? new URL(page.data.image, Astro.site) : undefined;
+const noindex = page !== undefined && page.data.status !== 'published';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+{noindex && <meta name="robots" content="noindex" />}
+<link rel="canonical" href={canonical} />
+<link rel="alternate" type="application/rss+xml" title="Matt Cooper-Wright: Writing" href={new URL('/rss.xml', Astro.site)} />
+<link rel="sitemap" href={new URL('/sitemap.xml', Astro.site)} />
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:type" content={page ? 'article' : 'website'} />
+<meta property="og:url" content={canonical} />
+{image && <meta property="og:image" content={image} />}
+<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />

@@ -12,13 +12,13 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `title` | string | yes | | Used in the menu, the index, `<title>` and `og:title`. Must not be empty. |
 | `description` | string | yes | | Used in the index, the description meta tag and `og:description`. |
 | `date` | date | yes | | `YYYY-MM-DD`. Sorts pages within a menu group and on the index, newest first. |
-| `type` | `react`, `html`, `mdx` or `external` | yes | | Decides which payload the folder holds. |
+| `type` | `md`, `html`, `mdx`, `react` or `external` | yes | | Decides which payload the folder holds and how it renders. See [Types](#types). |
 | `status` | `published`, `unlisted` or `draft` | no | `published` | See [Status](#status). |
 | `section` | `Writing`, `Projects` or `Experiments` | no | | Menu group. Pages without one go under "More". |
 | `updated` | date | no | | Date of the last meaningful change. |
-| `tags` | array of strings | no | | Not used by the site yet. |
+| `tags` | array of strings | no | | Shown on md posts and as RSS categories. |
 | `menuOrder` | number | no | | Lower numbers come first within a menu group. Pages without one follow, by date. |
-| `navTheme` | `light`, `dark` or `auto` | no | `auto` | Colours of the header on this page. `auto` follows the visitor's system setting. |
+| `navTheme` | `light`, `dark` or `auto` | no | `auto` | Colours of the header, or of the slim bar on html pages. `auto` follows the visitor's system setting. |
 | `image` | path | no | | Share image, as a site-root path to a file in `public/`, such as `/images/hello.png`. Becomes an absolute `og:image`. |
 | `indexStyle` | object | no | | Inline styles for this page's card on the index. Accepts `background`, `color` and `fontFamily`, all strings. |
 | `url` | http or https URL | external only | | Required when `type` is `external` and rejected for every other type. |
@@ -34,7 +34,31 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `unlisted` | built, loads by URL | renders | left out | left out | yes |
 | `draft` | not built | renders | left out | left out | yes |
 
-There is no sitemap yet. When one is added it should use `getListedPages()` in `src/lib/pages.ts`.
+The sitemap (`/sitemap.xml`) is built from `getListedPages()` in `src/lib/pages.ts`, so only published pages on this site appear. External pages are left out. The RSS feed (`/rss.xml`) lists published Writing pages. Section indexes at `/writing/`, `/projects/` and `/experiments/` list each section's published pages, newest first.
+
+## Types
+
+| Type | Payload | Renders as | Who may submit |
+| --- | --- | --- | --- |
+| `md` | `index.md` | Post layout: title, UK date, updated date, tags, reading time, link to section. Body in the serif role, headings in the display role. | anyone, including chat and machine senders |
+| `html` | `index.html` | Sandboxed shell: a slim bar, then the payload in a `srcdoc` iframe with `sandbox="allow-scripts"`. | anyone, including chat and machine senders |
+| `external` | none | A menu and index link to `url`. | anyone, including chat and machine senders |
+| `mdx` | `index.mdx` | Simple article layout. | human pull request only |
+| `react` | `index.tsx` | Full-bleed component, static unless `hydrate`. | human pull request only |
+
+mdx and react execute code at build time, so they only arrive through a reviewed pull request.
+
+**md rules.** Plain Markdown only. Raw HTML of any kind (tags, comments, `<script>`) fails the build with its line number, because Markdown would pass it through unsandboxed. Use the html type for HTML. Imports and `{expressions}` have no effect in md; they render as text.
+
+**html rules.** One self-contained `index.html`. It runs in an iframe without `allow-same-origin`, so it has an opaque origin and can't reach the site, its cookies or the parent page. A Content-Security-Policy on the shell, inherited by the iframe, allows:
+
+- scripts from `https://cdnjs.cloudflare.com`, `https://cdn.jsdelivr.net` and inline
+- styles inline and from `https://fonts.googleapis.com`
+- fonts from `https://fonts.gstatic.com`
+- images from `data:` and `blob:` only
+- no network connections (`connect-src 'none'`), no forms, no `<base>`
+
+Anything else, including the site's own files and self-hosted fonts, is blocked. Pin library versions in script URLs. `/gsap-sandbox/` is an unlisted fixture that proves animation libraries work.
 
 ## Menu order
 
@@ -110,6 +134,25 @@ import HydratedPage from '../layouts/HydratedPage.astro';
 ```
 The build fails if a page has `hydrate: true` without a shim, if a shim has no matching page, or if a hydrated page is a draft in a production build (a shim always publishes, so use `unlisted` instead).
 
+### md
+```
+src/content/pages/hello/
+  manifest.json
+  index.md
+```
+```json
+{
+  "schemaVersion": 1,
+  "title": "Hello",
+  "description": "A short note.",
+  "date": "2026-10-11",
+  "updated": "2026-10-12",
+  "type": "md",
+  "section": "Writing",
+  "tags": ["notes"]
+}
+```
+
 ### external
 ```
 src/content/pages/talk/
@@ -126,4 +169,4 @@ src/content/pages/talk/
 }
 ```
 
-The html type is defined in the schema but doesn't render yet. A page of that type fails the build with "not implemented yet" until the first real one is ported.
+Folder names `writing`, `projects`, `experiments`, `rss.xml`, `sitemap.xml`, `robots.txt` and `404` are reserved for site routes and fail the build.

@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { FONT_ROLES } from './fonts';
 
-export const PAGE_TYPES = ['react', 'html', 'mdx', 'external'] as const;
+export const PAGE_TYPES = ['react', 'html', 'mdx', 'md', 'external'] as const;
 export const STATUSES = ['published', 'unlisted', 'draft'] as const;
 export const SECTIONS = ['Writing', 'Projects', 'Experiments'] as const;
 export const NAV_THEMES = ['light', 'dark', 'auto'] as const;

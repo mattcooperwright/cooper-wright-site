@@ -1,0 +1,16 @@
+---
+// html pages. A separate route from [slug] so the shell's module graph never
+// includes Base or the site stylesheet, which the shell's CSP would block.
+import type { GetStaticPaths } from 'astro';
+import HtmlShell from '../layouts/HtmlShell.astro';
+import { getHtmlPages, loadHtmlPayload, type Page } from '../lib/pages';
+
+export const getStaticPaths = (async () => {
+  const pages = await getHtmlPages();
+  return pages.map((page) => ({ params: { sandboxed: page.id }, props: { page } }));
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page };
+const html = await loadHtmlPayload(page);
+---
+<HtmlShell page={page} html={html} />

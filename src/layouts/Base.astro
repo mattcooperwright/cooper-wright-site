@@ -2,13 +2,15 @@
 import { Font } from 'astro:assets';
 import '../styles/global.css';
 import { fontVariable, type FontRole } from '../lib/fonts';
-import { getMenuGroups, isExternal, pageHref, type Page } from '../lib/pages';
+import HeadMeta from '../components/HeadMeta.astro';
+import { SECTIONS } from '../lib/manifest';
+import { getMenuGroups, isExternal, pageHref, sectionSlug, type Page } from '../lib/pages';
 
 interface Props {
   title: string;
   description?: string;
   page?: Page;
-  // Font roles for pages without a manifest, such as home and 404.
+  // Font roles the layout needs, added to any the page's manifest lists.
   fonts?: FontRole[];
   // React pages bring their own layout, so main drops its width and padding.
   fullBleed?: boolean;
@@ -17,11 +19,8 @@ interface Props {
 const { page } = Astro.props;
 const title = page?.data.title ?? Astro.props.title;
 const description = page?.data.description ?? Astro.props.description;
-const image = page?.data.image ? new URL(page.data.image, Astro.site) : undefined;
-const noindex = page !== undefined && page.data.status !== 'published';
 const navTheme = page?.data.navTheme ?? 'auto';
-const fonts = [...new Set(page?.data.fonts ?? Astro.props.fonts ?? [])];
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const fonts = [...new Set([...(Astro.props.fonts ?? []), ...(page?.data.fonts ?? [])])];
 
 const groups = await getMenuGroups();
 const current = Astro.url.pathname.replace(/\/$/, '');
@@ -29,18 +28,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
-    {noindex && <meta name="robots" content="noindex" />}
-    <link rel="canonical" href={canonical} />
-    <meta property="og:title" content={title} />
-    {description && <meta property="og:description" content={description} />}
-    <meta property="og:type" content={page ? 'article' : 'website'} />
-    <meta property="og:url" content={canonical} />
-    {image && <meta property="og:image" content={image} />}
-    <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    <HeadMeta title={title} description={description} page={page} />
     {fonts.map((role) => <Font cssVariable={fontVariable(role)} />)}
   </head>
   <body class="font-body text-neutral-900 bg-white">
@@ -52,7 +40,13 @@ const current = Astro.url.pathname.replace(/\/$/, '');
         <a href="/" class="font-semibold">Home</a>
         {groups.map((group) => (
           <div>
-            <h2 class="mb-1 text-xs uppercase tracking-wide opacity-70">{group.label}</h2>
+            <h2 class="mb-1 text-xs uppercase tracking-wide opacity-70">
+              {(SECTIONS as readonly string[]).includes(group.label) ? (
+                <a href={`/${sectionSlug(group.label as (typeof SECTIONS)[number])}/`}>{group.label}</a>
+              ) : (
+                group.label
+              )}
+            </h2>
             <ul class="grid gap-1">
               {group.pages.map((item) => (
                 <li>

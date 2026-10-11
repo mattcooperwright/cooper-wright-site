@@ -1,0 +1,50 @@
+---
+// Writing layout for md pages: title, dates, tags, reading time and the body
+// in the serif role at a comfortable measure, with headings in the display role.
+import Base from './Base.astro';
+import { formatDate, sectionSlug, type Page } from '../lib/pages';
+
+interface Props {
+  page: Page;
+  // The raw Markdown, used for the reading time.
+  markdown: string;
+}
+
+const { page, markdown } = Astro.props;
+const { title, date, updated, tags, section } = page.data;
+const words = markdown.split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.ceil(words / 230));
+const back = section ? { href: `/${sectionSlug(section)}/`, label: section } : { href: '/', label: 'Home' };
+---
+<Base title={title} page={page} fonts={['serif', 'display']}>
+  <article class="mx-auto max-w-[65ch]">
+    <header class="mb-10 font-display">
+      <p class="mb-4 text-sm"><a href={back.href} class="underline">← {back.label}</a></p>
+      <h1 class="mb-4 text-4xl font-semibold leading-tight">{title}</h1>
+      <p class="text-sm text-neutral-600">
+        <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+        {updated && (
+          <> · Updated <time datetime={updated.toISOString().slice(0, 10)}>{formatDate(updated)}</time></>
+        )}
+        {` · ${minutes} min read`}
+      </p>
+      {tags && tags.length > 0 && (
+        <ul class="mt-3 flex flex-wrap gap-2 text-xs" aria-label="Tags">
+          {tags.map((tag) => <li class="rounded-full border border-neutral-300 px-2 py-0.5">{tag}</li>)}
+        </ul>
+      )}
+    </header>
+    <div
+      class="font-serif text-lg leading-relaxed
+        [&_h2]:font-display [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:leading-snug
+        [&_h3]:font-display [&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:text-xl [&_h3]:font-semibold
+        [&_h4]:font-display [&_h4]:mt-6 [&_h4]:mb-2 [&_h4]:font-semibold
+        [&_p]:mb-5 [&_a]:underline [&_ul]:mb-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mb-5 [&_ol]:list-decimal [&_ol]:pl-6
+        [&_li]:mb-1 [&_blockquote]:my-6 [&_blockquote]:border-l-2 [&_blockquote]:border-neutral-300 [&_blockquote]:pl-4 [&_blockquote]:italic
+        [&_code]:font-mono [&_code]:text-[0.85em] [&_pre]:my-6 [&_pre]:overflow-x-auto [&_pre]:rounded [&_pre]:bg-neutral-100 [&_pre]:p-4
+        [&_hr]:my-10 [&_img]:my-6 [&_img]:max-w-full"
+    >
+      <slot />
+    </div>
+  </article>
+</Base>
