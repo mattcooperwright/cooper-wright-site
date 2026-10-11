@@ -32,6 +32,7 @@ describe('manifestSchema', () => {
     expect(data.navTheme).toBe('auto');
     expect(data.source).toBe('manual');
     expect(data.fonts).toEqual([]);
+    expect(data.hydrate).toBe(false);
   });
 
   it('accepts an external manifest with a url', () => {
@@ -89,5 +90,13 @@ describe('manifestSchema', () => {
 
   it('rejects a font role that does not exist', () => {
     expect(issuesFor({ ...mdx, fonts: ['body', 'Inter'] }).map((i) => i.path)).toContain('fonts.1');
+  });
+
+  it('accepts hydrate on a react page and rejects it on any other type', () => {
+    expect(manifestSchema.parse({ ...mdx, type: 'react', hydrate: true }).hydrate).toBe(true);
+    expect(issuesFor({ ...mdx, hydrate: true })).toContainEqual({
+      path: 'hydrate',
+      message: 'hydrate is only allowed when type is react',
+    });
   });
 });

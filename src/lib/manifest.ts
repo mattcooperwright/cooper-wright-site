@@ -34,6 +34,8 @@ export const manifestSchema = z
     source: z.string().default('manual'),
     // Font roles this page loads. See docs/fonts.md.
     fonts: z.array(z.enum(FONT_ROLES)).default([]),
+    // React pages with state, effects or animation. Needs a route shim; see docs/manifest.md.
+    hydrate: z.boolean().default(false),
   })
   .superRefine((data, ctx) => {
     if (data.type === 'external' && data.url === undefined) {
@@ -41,6 +43,9 @@ export const manifestSchema = z
     }
     if (data.type !== 'external' && data.url !== undefined) {
       ctx.addIssue({ code: 'custom', path: ['url'], message: 'url is only allowed when type is external' });
+    }
+    if (data.hydrate && data.type !== 'react') {
+      ctx.addIssue({ code: 'custom', path: ['hydrate'], message: 'hydrate is only allowed when type is react' });
     }
   });
 
