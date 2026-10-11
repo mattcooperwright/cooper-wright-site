@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "title": "Hello",
+  "description": "A placeholder page that proves the content pipeline works.",
+  "date": "2026-10-11",
+  "type": "mdx",
+  "menuOrder": 1
+}
