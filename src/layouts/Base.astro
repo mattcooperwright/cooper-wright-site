@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import { getMenuPages } from '../lib/pages';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+const menu = await getMenuPages();
+const current = Astro.url.pathname.replace(/\/$/, '');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+  <body class="mx-auto max-w-3xl px-4 py-8 font-sans text-neutral-900 bg-white">
+    <header class="mb-12">
+      <nav aria-label="Main">
+        <ul class="flex flex-wrap gap-x-6 gap-y-2">
+          <li><a href="/" class="font-semibold">Home</a></li>
+          {menu.map((page) => (
+            <li>
+              <a
+                href={`/${page.id}/`}
+                aria-current={current === `/${page.id}` ? 'page' : undefined}
+                class="aria-[current=page]:underline"
+              >
+                {page.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
