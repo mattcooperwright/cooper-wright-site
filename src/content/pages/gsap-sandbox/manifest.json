@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "title": "GSAP sandbox test",
+  "description": "Fixture proving that animation libraries from cdnjs run inside the sandboxed html shell.",
+  "date": "2026-10-11",
+  "type": "html",
+  "status": "unlisted",
+  "section": "Experiments",
+  "navTheme": "dark"
+}
