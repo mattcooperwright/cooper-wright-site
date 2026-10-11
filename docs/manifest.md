@@ -23,6 +23,7 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `indexStyle` | object | no | | Inline styles for this page's card on the index. Accepts `background`, `color` and `fontFamily`, all strings. |
 | `url` | http or https URL | external only | | Required when `type` is `external` and rejected for every other type. |
 | `source` | string | no | `manual` | Where the page came from, for example a publisher tool. |
+| `fonts` | array of font roles | no | `[]` | Roles this page loads: `display`, `body`, `serif`, `geometric`, `poster`, `humanist`, `rounded`, `grotesque`. See `docs/fonts.md`. |
 
 ## Status
 
