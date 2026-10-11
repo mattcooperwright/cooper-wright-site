@@ -147,3 +147,10 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# macOS
+.DS_Store
+
+# Astro adapter build output, in case an adapter is added later
+.vercel/
+.netlify/
