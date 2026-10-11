@@ -42,7 +42,7 @@ const fonts = FONT_FAMILIES.map((font) => {
 });
 
 export default defineConfig({
-  site: 'https://cooper-wright.com',
+  site: 'https://matt.cooper-wright.com',
   output: 'static',
   integrations: [react(), mdx()],
   fonts,
