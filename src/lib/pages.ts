@@ -1,7 +1,8 @@
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { SECTIONS } from './manifest';
+import { findRawHtml } from './markdown-safety';
 
 export type Page = CollectionEntry<'pages'>;
 export type MenuGroup = { label: string; pages: Page[] };
@@ -10,12 +11,27 @@ const PAGES_DIR = join(process.cwd(), 'src/content/pages');
 const PUBLIC_DIR = join(process.cwd(), 'public');
 // Hydrated react pages get a route shim here, named after the slug.
 const ROUTES_DIR = join(process.cwd(), 'src/pages');
-const FIXED_ROUTES = new Set(['index.astro', '404.astro', '[slug].astro']);
+const FIXED_ROUTES = new Set([
+  'index.astro',
+  '404.astro',
+  '[slug].astro',
+  '[section].astro',
+  '[sandboxed].astro',
+  'rss.xml.ts',
+  'sitemap.xml.ts',
+]);
+
+export type Section = (typeof SECTIONS)[number];
+// URL slug of each section's index page, e.g. /writing/.
+export const sectionSlug = (section: Section) => section.toLowerCase();
+// Page folder names that would collide with a fixed route.
+const RESERVED_SLUGS = new Set([...SECTIONS.map(sectionSlug), 'rss.xml', 'sitemap.xml', 'robots.txt', '404']);
 
 // The single payload file each page type expects next to its manifest.
 // External pages have no payload: their url lives in the manifest.
 const PAYLOAD_FILE: Record<Page['data']['type'], string | null> = {
   mdx: 'index.mdx',
+  md: 'index.md',
   html: 'index.html',
   react: 'index.tsx',
   external: null,
@@ -27,10 +43,21 @@ const mdxPayloads = import.meta.glob<{ default: (props: Record<string, unknown>)
   '/src/content/pages/*/index.mdx',
 );
 const reactPayloads = import.meta.glob<{ default: () => unknown }>('/src/content/pages/*/index.tsx');
+const mdPayloads = import.meta.glob<{
+  Content: (props: Record<string, unknown>) => unknown;
+  rawContent: () => string;
+}>('/src/content/pages/*/index.md');
+const htmlPayloads = import.meta.glob<string>('/src/content/pages/*/index.html', {
+  query: '?raw',
+  import: 'default',
+});
 
 // Fails the build unless the folder holds the payload its type expects and nothing else,
 // and any share image exists in public/.
 function assertPage(page: Page): void {
+  if (RESERVED_SLUGS.has(page.id)) {
+    throw new Error(`Page folder "${page.id}" is reserved for a site route. Rename the folder.`);
+  }
   const expected = PAYLOAD_FILE[page.data.type];
   const files = readdirSync(join(PAGES_DIR, page.id)).filter((f) => !IGNORED_FILES.has(f));
   const ok = expected ? files.length === 1 && files[0] === expected : files.length === 0;
@@ -44,8 +71,14 @@ function assertPage(page: Page): void {
   if (page.data.image && !existsSync(join(PUBLIC_DIR, page.data.image))) {
     throw new Error(`Page "${page.id}": image ${page.data.image} not found in public/.`);
   }
-  if (page.data.type === 'html') {
-    throw new Error(`Page "${page.id}": type "${page.data.type}" is not implemented yet.`);
+  if (page.data.type === 'md') {
+    const [first] = findRawHtml(readFileSync(join(PAGES_DIR, page.id, 'index.md'), 'utf8'));
+    if (first) {
+      throw new Error(
+        `Page "${page.id}": raw HTML is not allowed in md (line ${first.line}: ${first.html.slice(0, 60)}). ` +
+          'Use type html for HTML, which runs sandboxed.',
+      );
+    }
   }
   if (page.data.hydrate && !existsSync(join(ROUTES_DIR, `${page.id}.astro`))) {
     throw new Error(`Page "${page.id}" has hydrate: true but no route shim at src/pages/${page.id}.astro.`);
@@ -81,9 +114,15 @@ export async function getBuildPages(): Promise<Page[]> {
   );
 }
 
-// Pages rendered by [slug].astro. Hydrated pages have their own route shim.
+// Pages rendered by [slug].astro. Hydrated pages have their own route shim,
+// and html pages their own route so they never pull in the site stylesheet.
 export async function getSlugRoutePages(): Promise<Page[]> {
-  return (await getBuildPages()).filter(({ data }) => !data.hydrate);
+  return (await getBuildPages()).filter(({ data }) => !data.hydrate && data.type !== 'html');
+}
+
+// Pages rendered by [sandboxed].astro: html payloads in the sandboxed shell.
+export async function getHtmlPages(): Promise<Page[]> {
+  return (await getBuildPages()).filter(({ data }) => data.type === 'html');
 }
 
 // The page a route shim renders. Fails the build if the shim and manifest disagree.
@@ -99,6 +138,13 @@ export async function getHydratedPage(id: string): Promise<Page> {
 export async function getListedPages(): Promise<Page[]> {
   const pages = await getAllPages();
   return pages.filter(({ data }) => data.status === 'published');
+}
+
+const newestFirst = (a: Page, b: Page) => b.data.date.getTime() - a.data.date.getTime();
+
+// A section's published pages, newest first: its index page and, for Writing, the RSS feed.
+export async function getSectionPages(section: Section): Promise<Page[]> {
+  return (await getListedPages()).filter((p) => p.data.section === section).sort(newestFirst);
 }
 
 const byMenuOrderThenNewest = (a: Page, b: Page) =>
@@ -138,3 +184,20 @@ export async function loadReactPayload(page: Page) {
   if (!load) throw new Error(`Page "${page.id}": index.tsx not found.`);
   return (await load()).default;
 }
+
+export async function loadMdPayload(page: Page) {
+  const load = mdPayloads[`/src/content/pages/${page.id}/index.md`];
+  if (!load) throw new Error(`Page "${page.id}": index.md not found.`);
+  return load();
+}
+
+export async function loadHtmlPayload(page: Page): Promise<string> {
+  const load = htmlPayloads[`/src/content/pages/${page.id}/index.html`];
+  if (!load) throw new Error(`Page "${page.id}": index.html not found.`);
+  return load();
+}
+
+// UK date for display, e.g. "11 October 2026". Manifest dates are UTC midnight.
+export const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+

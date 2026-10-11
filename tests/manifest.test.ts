@@ -92,8 +92,13 @@ describe('manifestSchema', () => {
     expect(issuesFor({ ...mdx, fonts: ['body', 'Inter'] }).map((i) => i.path)).toContain('fonts.1');
   });
 
+  it('accepts the md type', () => {
+    expect(manifestSchema.parse({ ...mdx, type: 'md' }).type).toBe('md');
+  });
+
   it('accepts hydrate on a react page and rejects it on any other type', () => {
     expect(manifestSchema.parse({ ...mdx, type: 'react', hydrate: true }).hydrate).toBe(true);
+    expect(issuesFor({ ...mdx, type: 'md', hydrate: true }).map((i) => i.path)).toContain('hydrate');
     expect(issuesFor({ ...mdx, hydrate: true })).toContainEqual({
       path: 'hydrate',
       message: 'hydrate is only allowed when type is react',
