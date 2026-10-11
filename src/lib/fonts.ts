@@ -94,7 +94,7 @@ export const FONT_FAMILIES: FontFamily[] = [
     package: '@fontsource-variable/rethink-sans',
     version: '5.3.0',
     licence: 'OFL-1.1',
-    stylesheets: ['wght.css'],
+    stylesheets: ['wght.css', 'wght-italic.css'],
     weights: '400 800',
     fallback: 'sans-serif',
   },
@@ -104,7 +104,8 @@ export const FONT_FAMILIES: FontFamily[] = [
     package: '@fontsource-variable/dm-sans',
     version: '5.3.0',
     licence: 'OFL-1.1',
-    stylesheets: ['wght.css'],
+    // opsz: optical sizing, as the archive's Google Fonts import had.
+    stylesheets: ['opsz.css', 'opsz-italic.css'],
     weights: '100 1000',
     fallback: 'sans-serif',
   },
