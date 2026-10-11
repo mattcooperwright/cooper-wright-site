@@ -13,7 +13,8 @@ Matt Cooper-Wright's personal site. Astro 7 with React, MDX and Tailwind 4, buil
 - `src/lib/manifest.ts` is the Zod manifest schema. Keep Astro imports out of it.
 - `src/content.config.ts` loads the `pages` collection with that schema
 - `src/content/pages/<slug>/` holds one page: `manifest.json` plus its payload
-  (`index.mdx`, `index.html` or `index.tsx`; none for external). Only mdx and external render so far.
+  (`index.mdx`, `index.html` or `index.tsx`; none for external). html doesn't render yet.
+- A react page with `hydrate: true` also needs a route shim, `src/pages/<slug>.astro` (see docs/manifest.md)
 - `src/lib/pages.ts` has status filtering, payload checks and menu grouping
 - `tests/` holds the Vitest tests
 - `src/layouts/Base.astro` is the shared layout and generated menu
