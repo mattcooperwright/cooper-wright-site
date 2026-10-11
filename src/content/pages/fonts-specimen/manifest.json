@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "title": "Fonts specimen",
+  "description": "Every self-hosted font role at two weights.",
+  "date": "2026-10-11",
+  "type": "mdx",
+  "status": "unlisted",
+  "fonts": ["display", "body", "serif", "geometric", "poster", "humanist", "rounded", "grotesque"]
+}
