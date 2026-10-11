@@ -1,0 +1,44 @@
+---
+// One home page tile. Restyle every tile by editing this file.
+// The title is the tile's only link; its ::after overlay makes the whole tile clickable.
+import { SECTIONS } from '../lib/manifest';
+import { TILE_DEFAULTS, tileFontRole } from '../lib/home';
+import { isExternal, pageHref, type Page } from '../lib/pages';
+
+interface Props {
+  page: Page;
+}
+
+const { page } = Astro.props;
+const { title, description, section, image, indexStyle } = page.data;
+const external = isExternal(page);
+const style = {
+  background: indexStyle?.background ?? TILE_DEFAULTS.background,
+  color: indexStyle?.color ?? TILE_DEFAULTS.color,
+  fontFamily: `var(--font-${tileFontRole(indexStyle?.fontFamily)})`,
+};
+---
+<article
+  class="relative flex h-full flex-col overflow-hidden rounded-lg border border-black/10 transition-shadow hover:shadow-md focus-within:ring-2 focus-within:ring-current"
+  style={style}
+>
+  {image && (
+    <img src={image} alt={title} loading="lazy" decoding="async" class="aspect-[16/9] w-full object-cover" />
+  )}
+  <div class="flex flex-1 flex-col gap-2 p-5">
+    {section && (SECTIONS as readonly string[]).includes(section) && (
+      <p class="text-xs uppercase tracking-wide opacity-70">{section}</p>
+    )}
+    <h2 class="text-xl font-semibold leading-snug">
+      <a
+        href={pageHref(page)}
+        class="outline-none after:absolute after:inset-0 after:content-['']"
+        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      >
+        {title}{external && <span aria-hidden="true"> ↗</span>}
+        {external && <span class="sr-only"> (opens in a new tab)</span>}
+      </a>
+    </h2>
+    <p class="opacity-80">{description}</p>
+  </div>
+</article>

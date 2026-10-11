@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { SECTIONS } from './manifest';
 import { findRawHtml } from './markdown-safety';
+import { contrastRatio, parseColor } from './contrast';
+import { TILE_DEFAULTS } from './home';
 
 export type Page = CollectionEntry<'pages'>;
 export type MenuGroup = { label: string; pages: Page[] };
@@ -99,10 +101,35 @@ function assertShims(pages: Page[]): void {
   }
 }
 
+// Warns, without failing the build, when a page's tile colours are hard to read.
+let contrastChecked = false;
+function warnLowContrast(pages: Page[]): void {
+  if (contrastChecked) return;
+  contrastChecked = true;
+  for (const page of pages) {
+    const style = page.data.indexStyle;
+    if (!style?.background && !style?.color) continue;
+    const background = style.background ?? TILE_DEFAULTS.background;
+    const color = style.color ?? TILE_DEFAULTS.color;
+    const [bg, fg] = [parseColor(background), parseColor(color)];
+    if (!bg || !fg) {
+      console.warn(`[tiles] Page "${page.id}": can't check indexStyle contrast for ${color} on ${background}.`);
+      continue;
+    }
+    const ratio = contrastRatio(fg, bg);
+    if (ratio < 4.5) {
+      console.warn(
+        `[tiles] Page "${page.id}": indexStyle contrast ${ratio.toFixed(2)}:1 (${color} on ${background}) is below 4.5:1.`,
+      );
+    }
+  }
+}
+
 async function getAllPages(): Promise<Page[]> {
   const pages = await getCollection('pages');
   pages.forEach(assertPage);
   assertShims(pages);
+  warnLowContrast(pages);
   return pages;
 }
 

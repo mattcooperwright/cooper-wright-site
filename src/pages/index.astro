@@ -1,24 +1,20 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getListedPages, isExternal, pageHref } from '../lib/pages';
+import Tile from '../components/Tile.astro';
+import { homePages, tileFontRole } from '../lib/home';
+import { getListedPages } from '../lib/pages';
 
-const pages = (await getListedPages()).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const pages = homePages(await getListedPages());
+// Only the font roles the tiles actually use, plus body for the page itself.
+const fonts = [...new Set(['body' as const, ...pages.map((p) => tileFontRole(p.data.indexStyle?.fontFamily))])];
 ---
-<Base title="Matt Cooper-Wright" fonts={['body']}>
-  <h1 class="mb-8 text-3xl font-semibold">Matt Cooper-Wright</h1>
-  <ul class="grid gap-4">
-    {pages.map((page) => (
-      <li>
-        <a
-          href={pageHref(page)}
-          class="block rounded p-4 border border-neutral-200"
-          style={page.data.indexStyle}
-          {...(isExternal(page) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        >
-          <span class="block font-semibold">{page.data.title}</span>
-          <span class="block">{page.data.description}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
+<Base title="Matt Cooper-Wright" fonts={fonts} fullBleed>
+  <div class="mx-auto max-w-6xl px-4 pb-12">
+    <h1 class="mb-8 text-3xl font-semibold">Matt Cooper-Wright</h1>
+    <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {pages.map((page) => (
+        <li><Tile page={page} /></li>
+      ))}
+    </ul>
+  </div>
 </Base>
