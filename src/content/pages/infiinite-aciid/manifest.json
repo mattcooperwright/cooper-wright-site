@@ -6,5 +6,9 @@
   "type": "html",
   "status": "published",
   "section": "Experiments",
-  "navTheme": "dark"
+  "navTheme": "dark",
+  "indexStyle": {
+    "background": "#f4c20d",
+    "color": "#141413"
+  }
 }
