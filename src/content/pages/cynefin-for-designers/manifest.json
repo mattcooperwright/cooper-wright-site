@@ -7,5 +7,6 @@
   "status": "published",
   "section": "Writing",
   "navTheme": "light",
-  "fonts": ["serif", "geometric"]
+  "fonts": ["serif", "geometric"],
+  "indexStyle": { "background": "#ffffff", "color": "#1a1a1a", "fontFamily": "serif" }
 }

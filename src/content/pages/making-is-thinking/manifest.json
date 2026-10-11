@@ -8,5 +8,6 @@
   "section": "Writing",
   "navTheme": "light",
   "fonts": ["poster", "rounded"],
-  "hydrate": true
+  "hydrate": true,
+  "indexStyle": { "background": "#F7F7F2", "color": "#101720", "fontFamily": "poster" }
 }
