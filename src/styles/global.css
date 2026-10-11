@@ -1,6 +1,28 @@
 @import "tailwindcss";
 
-@theme {
+/*
+  Font tokens, by role. Use these (font-body, var(--font-body) and so on), never family names.
+  Each role only downloads on pages that load it (see docs/fonts.md); elsewhere the system stack shows.
+*/
+/* static: always emitted, so pages can use var(--font-<role>) in inline styles too. */
+@theme static {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-system-serif: ui-serif, Georgia, "Times New Roman", serif;
+
+  --font-display: var(--webfont-display, var(--font-sans));
+  --font-body: var(--webfont-body, var(--font-sans));
+  --font-serif: var(--webfont-serif, var(--font-system-serif));
+  --font-geometric: var(--webfont-geometric, var(--font-sans));
+  --font-poster: var(--webfont-poster, var(--font-sans));
+  --font-humanist: var(--webfont-humanist, var(--font-sans));
+  --font-rounded: var(--webfont-rounded, var(--font-sans));
+  --font-grotesque: var(--webfont-grotesque, var(--font-sans));
+}
+
+@layer base {
+  html {
+    /* Never fake bold or italic: a role shows only the weights and styles it ships. */
+    font-synthesis: none;
+  }
 }

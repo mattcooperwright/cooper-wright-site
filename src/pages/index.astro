@@ -4,7 +4,7 @@ import { getListedPages, isExternal, pageHref } from '../lib/pages';
 
 const pages = (await getListedPages()).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
-<Base title="Matt Cooper-Wright">
+<Base title="Matt Cooper-Wright" fonts={['body']}>
   <h1 class="mb-8 text-3xl font-semibold">Matt Cooper-Wright</h1>
   <ul class="grid gap-4">
     {pages.map((page) => (

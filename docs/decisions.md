@@ -32,3 +32,9 @@ Adding an optional field keeps `schemaVersion` at 1. Renaming or removing a fiel
 
 ## 2026-10-11: No sitemap yet
 Unlisted and draft pages must stay out of any sitemap. When one is added, it should be built from `getListedPages()` in `src/lib/pages.ts`.
+
+## 2026-10-11: Open-licence replacements for commercial fonts
+The old site used four commercial typefaces. They were replaced with open-licence (OFL-1.1) families: Neue Haas Grotesk Display Pro became Inter, Plantin MT Pro became Newsreader, BR Cobane became Hanken Grotesk, and BR Segma became Outfit. Gasoek One, Sofia Sans, Rethink Sans and DM Sans were added alongside them.
+
+## 2026-10-11: Self-hosted fonts, loaded per page by role
+Fonts come from pinned Fontsource npm packages and are served from the site through Astro's Fonts API with the local provider. No external font host is used. Pages name roles (display, body, serif, geometric, poster, humanist, rounded and grotesque), not families, and each page downloads only the roles listed in its manifest's `fonts` field. Adding `fonts` was an optional field, so `schemaVersion` stays at 1. See `docs/fonts.md`.

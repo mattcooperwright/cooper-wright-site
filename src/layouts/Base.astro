@@ -1,11 +1,15 @@
 ---
+import { Font } from 'astro:assets';
 import '../styles/global.css';
+import { fontVariable, type FontRole } from '../lib/fonts';
 import { getMenuGroups, isExternal, pageHref, type Page } from '../lib/pages';
 
 interface Props {
   title: string;
   description?: string;
   page?: Page;
+  // Font roles for pages without a manifest, such as home and 404.
+  fonts?: FontRole[];
 }
 
 const { page } = Astro.props;
@@ -14,6 +18,7 @@ const description = page?.data.description ?? Astro.props.description;
 const image = page?.data.image ? new URL(page.data.image, Astro.site) : undefined;
 const noindex = page !== undefined && page.data.status !== 'published';
 const navTheme = page?.data.navTheme ?? 'auto';
+const fonts = [...new Set(page?.data.fonts ?? Astro.props.fonts ?? [])];
 const canonical = new URL(Astro.url.pathname, Astro.site);
 
 const groups = await getMenuGroups();
@@ -34,8 +39,9 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     <meta property="og:url" content={canonical} />
     {image && <meta property="og:image" content={image} />}
     <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+    {fonts.map((role) => <Font cssVariable={fontVariable(role)} />)}
   </head>
-  <body class="font-sans text-neutral-900 bg-white">
+  <body class="font-body text-neutral-900 bg-white">
     <header
       data-nav-theme={navTheme}
       class="mb-12 data-[nav-theme=light]:bg-white data-[nav-theme=light]:text-neutral-900 data-[nav-theme=dark]:bg-neutral-900 data-[nav-theme=dark]:text-white data-[nav-theme=auto]:dark:bg-neutral-900 data-[nav-theme=auto]:dark:text-white"

@@ -1,6 +1,7 @@
 // Page manifest schema, version 1. Documented in docs/manifest.md.
 // No Astro imports here: this module is shared with a future publisher.
 import { z } from 'zod';
+import { FONT_ROLES } from './fonts';
 
 export const PAGE_TYPES = ['react', 'html', 'mdx', 'external'] as const;
 export const STATUSES = ['published', 'unlisted', 'draft'] as const;
@@ -31,6 +32,8 @@ export const manifestSchema = z
       .optional(),
     url: z.url({ protocol: /^https?$/ }).optional(),
     source: z.string().default('manual'),
+    // Font roles this page loads. See docs/fonts.md.
+    fonts: z.array(z.enum(FONT_ROLES)).default([]),
   })
   .superRefine((data, ctx) => {
     if (data.type === 'external' && data.url === undefined) {

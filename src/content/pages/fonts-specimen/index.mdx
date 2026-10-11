@@ -1,0 +1,22 @@
+import { FONT_FAMILIES } from '../../../lib/fonts';
+
+This page is unlisted. It shows each font role with a heading, a paragraph and numerals at two weights. Pages use the role names, never the family names. See `docs/fonts.md`.
+
+{FONT_FAMILIES.map((font) => (
+  <section className="mt-12 border-t border-neutral-200 pt-6" style={{ fontFamily: `var(--font-${font.role})` }}>
+    <p className="mb-4 font-sans text-sm text-neutral-500">
+      <code>font-{font.role}</code> · {font.family} · {font.licence} · weights {font.weights}
+    </p>
+    {(font.weights.includes(' ') ? [400, 700] : [400]).map((weight) => (
+      <div className="mb-6" style={{ fontWeight: weight }}>
+        <p className="mb-1 font-sans text-xs text-neutral-500">{weight}</p>
+        <h2 className="mb-2 text-4xl">Sphinx of black quartz, judge my vow</h2>
+        <p className="mb-2 max-w-prose text-lg">The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs, and grab a few café crèmes on the way.</p>
+        <p className="text-2xl">0123456789 £€$% 1/2</p>
+      </div>
+    ))}
+    {!font.weights.includes(' ') && (
+      <p className="font-sans text-sm text-neutral-500">{font.family} ships one weight, so it is shown at 400 only.</p>
+    )}
+  </section>
+))}

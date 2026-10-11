@@ -31,6 +31,7 @@ describe('manifestSchema', () => {
     expect(data.status).toBe('published');
     expect(data.navTheme).toBe('auto');
     expect(data.source).toBe('manual');
+    expect(data.fonts).toEqual([]);
   });
 
   it('accepts an external manifest with a url', () => {
@@ -49,6 +50,7 @@ describe('manifestSchema', () => {
       image: '/images/share.png',
       indexStyle: { background: '#000', color: '#fff', fontFamily: 'Georgia, serif' },
       source: 'publisher',
+      fonts: ['body', 'poster'],
     });
     expect(result.success).toBe(true);
   });
@@ -83,5 +85,9 @@ describe('manifestSchema', () => {
   it('rejects an unknown section and a non-http url', () => {
     expect(issuesFor({ ...mdx, section: 'Notes' }).map((i) => i.path)).toContain('section');
     expect(issuesFor({ ...external, url: 'javascript:alert(1)' }).map((i) => i.path)).toContain('url');
+  });
+
+  it('rejects a font role that does not exist', () => {
+    expect(issuesFor({ ...mdx, fonts: ['body', 'Inter'] }).map((i) => i.path)).toContain('fonts.1');
   });
 });
