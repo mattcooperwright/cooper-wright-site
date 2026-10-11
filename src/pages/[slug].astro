@@ -1,20 +1,28 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Base from '../layouts/Base.astro';
-import { getBuildPages, loadMdxPayload, type Page } from '../lib/pages';
+import { getSlugRoutePages, loadMdxPayload, loadReactPayload, type Page } from '../lib/pages';
 
 export const getStaticPaths = (async () => {
-  const pages = await getBuildPages();
+  const pages = await getSlugRoutePages();
   return pages.map((page) => ({ params: { slug: page.id }, props: { page } }));
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page };
-const Content = await loadMdxPayload(page);
+// React pages without hydrate render to static HTML with no client JS.
+const Component = page.data.type === 'react' ? await loadReactPayload(page) : null;
+const Content = page.data.type === 'mdx' ? await loadMdxPayload(page) : null;
 ---
-<Base title={page.data.title} page={page}>
-  <article class="[&_p]:mb-4">
-    <h1 class="mb-6 text-3xl font-semibold">{page.data.title}</h1>
-    <Content />
-  </article>
-  <p class="mt-12"><a href="/" class="underline">Back to home</a></p>
-</Base>
+{Component ? (
+  <Base title={page.data.title} page={page} fullBleed>
+    <Component />
+  </Base>
+) : Content && (
+  <Base title={page.data.title} page={page}>
+    <article class="[&_p]:mb-4">
+      <h1 class="mb-6 text-3xl font-semibold">{page.data.title}</h1>
+      <Content />
+    </article>
+    <p class="mt-12"><a href="/" class="underline">Back to home</a></p>
+  </Base>
+)}

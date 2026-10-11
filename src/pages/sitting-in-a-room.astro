@@ -1,0 +1,8 @@
+---
+// Route shim: hydrates this react page. Static react pages render through [slug].astro.
+import Page from '../content/pages/sitting-in-a-room/index.tsx';
+import HydratedPage from '../layouts/HydratedPage.astro';
+---
+<HydratedPage id="sitting-in-a-room">
+  <Page client:load />
+</HydratedPage>

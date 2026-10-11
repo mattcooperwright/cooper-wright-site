@@ -38,3 +38,10 @@ The old site used four commercial typefaces. They were replaced with open-licenc
 
 ## 2026-10-11: Self-hosted fonts, loaded per page by role
 Fonts come from pinned Fontsource npm packages and are served from the site through Astro's Fonts API with the local provider. No external font host is used. Pages name roles (display, body, serif, geometric, poster, humanist, rounded and grotesque), not families, and each page downloads only the roles listed in its manifest's `fonts` field. Adding `fonts` was an optional field, so `schemaVersion` stays at 1. See `docs/fonts.md`.
+
+## 2026-10-11: Three pages ported from the archive, URLs preserved
+I Am Sitting in a Room, Making Is Thinking and Cynefin for designers were ported from the archive as react pages, keeping their old URLs: `/sitting-in-a-room/`, `/making-is-thinking/` and `/cynefin-for-designers/`. Only fonts and routing changed; each page keeps its own tokens and structure. The home page was deliberately not ported. The old Figma Make scaffolding was left behind: `components/ui`, `Menu.tsx`, `routes.tsx`, `App.tsx` and its theme CSS.
+
+## 2026-10-11: Hydrated react pages use route shims
+React pages render to static HTML by default. Astro can only hydrate a component it imports statically, so a react page that needs client JavaScript sets `hydrate: true` and gets a short route shim in `src/pages/<slug>.astro`. Each hydrated page ships only its own code. Sitting in a Room (copy button) and Making Is Thinking (scroll-driven noise) are hydrated; Cynefin is static. Faux bold and italic stay off site-wide, so Gasoek One's bold text renders at its single regular weight.
+

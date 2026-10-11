@@ -1,0 +1,15 @@
+---
+// Layout for route shims in src/pages/<slug>.astro, which hydrate one react page.
+// The shim passes the component in the slot with a client: directive.
+import Base from './Base.astro';
+import { getHydratedPage } from '../lib/pages';
+
+interface Props {
+  id: string;
+}
+
+const page = await getHydratedPage(Astro.props.id);
+---
+<Base title={page.data.title} page={page} fullBleed>
+  <slot />
+</Base>

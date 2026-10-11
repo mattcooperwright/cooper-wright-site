@@ -10,6 +10,8 @@ interface Props {
   page?: Page;
   // Font roles for pages without a manifest, such as home and 404.
   fonts?: FontRole[];
+  // React pages bring their own layout, so main drops its width and padding.
+  fullBleed?: boolean;
 }
 
 const { page } = Astro.props;
@@ -75,7 +77,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
         ))}
       </nav>
     </header>
-    <main class="mx-auto max-w-3xl px-4 pb-12">
+    <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pb-12'}>
       <slot />
     </main>
   </body>

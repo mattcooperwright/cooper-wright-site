@@ -13,7 +13,7 @@ All fonts are self-hosted from pinned Fontsource npm packages. Nothing loads fro
 | Rethink Sans | rounded | `@fontsource-variable/rethink-sans` | 5.3.0 | OFL-1.1 |
 | DM Sans | grotesque | `@fontsource-variable/dm-sans` | 5.3.0 | OFL-1.1 |
 
-All are variable fonts covering their full weight range, except Gasoek One, which ships a single weight (400). Body and serif include italics. The others are upright only, and `font-synthesis: none` stops the browser faking bold or italic.
+All are variable fonts covering their full weight range, except Gasoek One, which ships a single weight (400). Body, serif, rounded and grotesque include italics; grotesque (DM Sans) also has optical sizing. The others are upright only, and `font-synthesis: none` stops the browser faking bold or italic.
 
 ## Using a role on a page
 

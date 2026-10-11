@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "title": "Making Is Thinking",
+  "description": "Every project has a moment when discussion spirals, and the next stage of thinking is only unlocked by making.",
+  "date": "2026-03-27",
+  "type": "react",
+  "status": "published",
+  "section": "Writing",
+  "navTheme": "light",
+  "fonts": ["poster", "rounded"],
+  "hydrate": true
+}
