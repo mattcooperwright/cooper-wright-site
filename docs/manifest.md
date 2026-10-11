@@ -20,7 +20,7 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `menuOrder` | number | no | | Lower numbers come first within a menu group. Pages without one follow, by date. |
 | `navTheme` | `light`, `dark` or `auto` | no | `auto` | Colours of the header, or of the slim bar on html pages. `auto` follows the visitor's system setting. |
 | `image` | path | no | | Share image, as a site-root path to a file in `public/`, such as `/images/hello.png`. Becomes an absolute `og:image`. |
-| `indexStyle` | object | no | | Inline styles for this page's card on the index. Accepts `background`, `color` and `fontFamily`, all strings. |
+| `indexStyle` | object | no | | Colours and font of this page's home page tile. `background` and `color` are CSS colours (default white and `#171717`); the build warns, without failing, if their contrast is below 4.5:1. `fontFamily` is a font role name such as `serif` or `poster`; anything else uses the body role. |
 | `url` | http or https URL | external only | | Required when `type` is `external` and rejected for every other type. |
 | `source` | string | no | `manual` | Where the page came from, for example a publisher tool. |
 | `hydrate` | boolean | no | `false` | React pages only. Set it when the component uses state, effects or animation, and add a route shim (see the react example). |
