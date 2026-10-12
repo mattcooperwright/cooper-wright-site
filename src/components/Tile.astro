@@ -12,23 +12,52 @@ interface Props {
 const { page } = Astro.props;
 const { title, description, section, image, indexStyle } = page.data;
 const external = isExternal(page);
-const style = {
-  background: indexStyle?.background ?? TILE_DEFAULTS.background,
-  color: indexStyle?.color ?? TILE_DEFAULTS.color,
-  fontFamily: `var(--font-${tileFontRole(indexStyle?.fontFamily)})`,
-};
+const background = indexStyle?.background ?? TILE_DEFAULTS.background;
+const color = indexStyle?.color ?? TILE_DEFAULTS.color;
+const fontFamily = `var(--font-${tileFontRole(indexStyle?.fontFamily)})`;
+const hasTag = Boolean(section && (SECTIONS as readonly string[]).includes(section));
+
+// The section tag is a fixed-size chip (not sized to its text) so this same box, in
+// pixels, can also cut the exact hole for it out of the background fill below.
+const TAG_BOX = { left: 20, top: 20, width: 112, height: 24 };
+const tagMask = `${TAG_BOX.width}px ${TAG_BOX.height}px`;
+const tagPosition = `${TAG_BOX.left}px ${TAG_BOX.top}px`;
+
+const backgroundStyle = hasTag
+  ? {
+      background,
+      maskImage: 'linear-gradient(#000, #000), linear-gradient(#000, #000)',
+      maskSize: `100% 100%, ${tagMask}`,
+      maskPosition: `0 0, ${tagPosition}`,
+      maskRepeat: 'no-repeat, no-repeat',
+      maskComposite: 'exclude',
+      WebkitMaskImage: 'linear-gradient(#000, #000), linear-gradient(#000, #000)',
+      WebkitMaskSize: `100% 100%, ${tagMask}`,
+      WebkitMaskPosition: `0 0, ${tagPosition}`,
+      WebkitMaskRepeat: 'no-repeat, no-repeat',
+      WebkitMaskComposite: 'xor',
+    }
+  : { background };
 ---
 <article
   class="relative flex aspect-square flex-col overflow-hidden shadow-sm transition-shadow hover:shadow-lg focus-within:ring-2 focus-within:ring-current"
-  style={style}
+  style={{ color, fontFamily }}
 >
+  {/* Background fill, with a hole cut exactly where the tag sits (see below), so the
+      fixed page background shows through — a real window, not a translucent tint. */}
+  <div class="absolute inset-0" style={backgroundStyle} />
   {image && (
-    <img src={image} alt={title} loading="lazy" decoding="async" class="aspect-[16/9] w-full object-cover" />
+    <img src={image} alt={title} loading="lazy" decoding="async" class="relative aspect-[16/9] w-full object-cover" />
   )}
-  <div class="flex flex-1 flex-col gap-2 p-5">
-    {section && (SECTIONS as readonly string[]).includes(section) && (
-      <p class="self-start bg-white/15 px-2 py-0.5 font-body text-xs uppercase tracking-wide text-white">{section}</p>
-    )}
+  {hasTag && (
+    <p
+      class="absolute flex items-center justify-center font-body text-xs uppercase tracking-wide text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.6)]"
+      style={{ left: `${TAG_BOX.left}px`, top: `${TAG_BOX.top}px`, width: `${TAG_BOX.width}px`, height: `${TAG_BOX.height}px` }}
+    >
+      {section}
+    </p>
+  )}
+  <div class="relative flex flex-1 flex-col gap-2 p-5 pt-14">
     <h2 class="text-xl font-semibold leading-snug">
       <a
         href={pageHref(page)}

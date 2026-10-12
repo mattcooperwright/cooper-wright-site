@@ -78,3 +78,8 @@ Four more changes alongside the font swap above. The home page heading is now la
 ## 2026-10-12: Header nav moved to a footer
 `Base.astro`'s single shared nav (used by every page) moved from a `<header>` above `<main>` to a `<footer>` below it. Content and per-page light/dark/auto theming are unchanged; only its position and the header-to-footer margin direction (`mb-12` → `mt-12`) changed.
 
+## 2026-10-12: Tile section tag is a literal hole, not a translucent tint
+The section tag's translucent chip (previous entry) tinted the tile's own background; the brief asked for something more literal — a square genuinely cut out of the tile, showing the fixed glass backdrop through it. `Tile.astro` is only ever used in the home grid, which sits directly above `FlutedGlassBackground`'s `fixed inset-0 -z-10` canvas with nothing opaque in between, so a truly transparent pixel anywhere in a tile reveals the live, correctly-positioned animation underneath it — no duplication, no faking.
+
+The tile's background fill is now its own `absolute inset-0` layer, separate from its content, with a hole cut into it via `mask-image`/`mask-composite: exclude` (plus `-webkit-mask-*`/`xor` for Safari) — two overlapping opaque mask layers excluded against each other leave a transparent gap. Unsupported browsers just ignore the mask and show a solid tile. The one simplification this needed: the hole can't gracefully chase a dynamically-sized text label (no reliable cross-browser way to mask an element by another element's rendered box), so the tag became a fixed-size chip (`20px, 20px, 112×24px`, sized for "EXPERIMENTS", the longest label) rather than one that hugs its text — the visible chip and the mask cutout use the same numbers, so they can't drift apart.
+
