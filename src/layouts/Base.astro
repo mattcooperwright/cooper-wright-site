@@ -34,10 +34,13 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     {fonts.map((role) => <Font cssVariable={fontVariable(role)} />)}
   </head>
   <body class="font-body text-neutral-900 bg-white">
-    <header
+    <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pb-12'}>
+      <slot />
+    </main>
+    <footer
       data-nav-theme={navTheme}
       class:list={[
-        Astro.props.navFixed ? 'fixed inset-x-0 bottom-0 z-10 shadow-[0_-1px_4px_rgb(0_0_0/0.08)]' : 'mb-12',
+        Astro.props.navFixed ? 'fixed inset-x-0 bottom-0 z-10 shadow-[0_-1px_4px_rgb(0_0_0/0.08)]' : 'mt-12',
         'data-[nav-theme=light]:bg-white data-[nav-theme=light]:text-neutral-900 data-[nav-theme=dark]:bg-neutral-900 data-[nav-theme=dark]:text-white data-[nav-theme=auto]:bg-white data-[nav-theme=auto]:text-neutral-900 data-[nav-theme=auto]:dark:bg-neutral-900 data-[nav-theme=auto]:dark:text-white',
       ]}
     >
@@ -75,9 +78,6 @@ const current = Astro.url.pathname.replace(/\/$/, '');
           </div>
         ))}
       </nav>
-    </header>
-    <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pb-12'}>
-      <slot />
-    </main>
+    </footer>
   </body>
 </html>

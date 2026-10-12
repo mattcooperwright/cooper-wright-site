@@ -15,4 +15,4 @@ export function tileFontRole(fontFamily?: string): FontRole {
 }
 
 // Tile colours when a page's indexStyle doesn't set them. Also used by the contrast check.
-export const TILE_DEFAULTS = { background: '#ffffff', color: '#171717' } as const;
+export const TILE_DEFAULTS = { background: '#171717', color: '#ffffff' } as const;

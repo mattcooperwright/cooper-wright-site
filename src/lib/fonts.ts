@@ -1,5 +1,6 @@
 // Font roles and the self-hosted families behind them. Documented in docs/fonts.md.
 // No Astro imports here: the manifest schema reads FONT_ROLES.
+import { fileURLToPath } from 'node:url';
 
 export const FONT_ROLES = [
   'display',
@@ -28,15 +29,28 @@ export interface FontFamily {
   fallback: 'sans-serif' | 'serif';
 }
 
+// Vendored (non-Fontsource) font packages live under src/assets/fonts/<family>,
+// laid out exactly like a Fontsource package (package.json, a stylesheet, files/)
+// so font-faces.ts can read them with the same code path. Absolute path: it must
+// resolve identically for font-faces.ts's require.resolve (anchored at src/lib/)
+// and for Astro's local font provider (which resolves relative to the project root).
+const OVERUSED_GROTESK_DIR = fileURLToPath(new URL('../assets/fonts/overused-grotesk', import.meta.url));
+
 export const FONT_FAMILIES: FontFamily[] = [
   {
+    // Previously Inter, added only as the open-licence stand-in for Neue Haas Grotesk
+    // Display Pro (see docs/decisions.md, 2026-10-11) and unused by any real page.
+    // Overused Grotesk is a purpose-built open alternative to that same typeface, so
+    // it replaces Inter here rather than taking on a new role. Vendored, not on
+    // Fontsource: pinned to github.com/RandomMaerks/Overused-Grotesk release
+    // v0.5-alpha.2, subset to latin/latin-ext. See docs/fonts.md.
     role: 'display',
-    family: 'Inter',
-    package: '@fontsource-variable/inter',
-    version: '5.3.0',
+    family: 'Overused Grotesk',
+    package: OVERUSED_GROTESK_DIR,
+    version: '0.5.0-alpha.2',
     licence: 'OFL-1.1',
-    stylesheets: ['wght.css'],
-    weights: '100 900',
+    stylesheets: ['overused-grotesk.css'],
+    weights: '300 900',
     fallback: 'sans-serif',
   },
   {
