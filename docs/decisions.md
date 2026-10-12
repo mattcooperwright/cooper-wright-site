@@ -64,3 +64,6 @@ The grid now sits over `src/components/KaleidoscopeBackground.astro`, a fixed fu
 
 Tiles lost their rounded corners and their `border border-black/10` outline, replaced by a plain drop shadow, since a flat, sharp-edged card reads more clearly against the animated backdrop than a bordered, rounded one. The keyboard focus ring stays, for accessibility.
 
+## 2026-10-12: Kaleidoscope backdrop replaced with a fluted-glass WebGL shader
+The canvas-2D kaleidoscope wedges in `KaleidoscopeBackground.astro` read as muddy rather than glassy, so the home page backdrop was rebuilt as `FlutedGlassBackground.astro`: a raw WebGL fragment shader rendering an iridescent, continuously-shifting plasma colour field, bent into fine vertical ridges that mimic reeded/fluted glass (brightening at each ridge centre, darkening in the grooves between them). It uses the browser's native `canvas.getContext('webgl')` API directly — no shader or 3D library — so it adds zero npm dependencies, the same spirit as the component it replaces. Same contract as before: fixed full-viewport canvas behind the tile grid, frozen on a single rendered frame under `prefers-reduced-motion`, silent no-op if WebGL is unavailable or shader compilation fails.
+

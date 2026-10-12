@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import KaleidoscopeBackground from '../components/KaleidoscopeBackground.astro';
+import FlutedGlassBackground from '../components/FlutedGlassBackground.astro';
 import Tile from '../components/Tile.astro';
 import { homePages, tileFontRole } from '../lib/home';
 import { getListedPages } from '../lib/pages';
@@ -13,7 +13,7 @@ const fonts = [
 ];
 ---
 <Base title="Matt Cooper-Wright" fonts={fonts} fullBleed>
-  <KaleidoscopeBackground />
+  <FlutedGlassBackground />
   <div class="mx-auto max-w-6xl px-4 pb-12">
     <div class="mb-8 inline-block bg-white px-4 py-2 shadow-sm" style="font-family: var(--font-plain)">
       <h1 class="text-3xl font-semibold">Matt Cooper-Wright</h1>
