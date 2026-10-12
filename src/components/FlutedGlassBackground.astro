@@ -47,29 +47,59 @@
 
     vec3 colourAt(vec2 uv, float t) {
       vec2 p = (uv * 2.0 - 1.0) * vec2(u_resolution.x / u_resolution.y, 1.0) * 1.6;
-      return palette(field(p, t) * 0.3 + t * 0.03);
+      return palette(field(p, t) * 0.3 + t * 0.25);
+    }
+
+    // Fluid, person-like pacing: a base drift plus a few slow sine terms, summed as the
+    // exact closed-form integral of a wobbling speed. The colour field behind the glass
+    // then glides, surges and nearly pauses, rather than drifting at one constant rate.
+    float warpedTime(float realT) {
+      float baseSpeed = 0.10;
+      float w1 = 0.19; float a1 = 0.040; float p1 = 0.6;
+      float w2 = 0.085; float a2 = 0.030; float p2 = 2.3;
+      float w3 = 0.27; float a3 = 0.020; float p3 = 4.1;
+      return baseSpeed * realT
+        - (a1 / w1) * (cos(w1 * realT + p1) - cos(p1))
+        - (a2 / w2) * (cos(w2 * realT + p2) - cos(p2))
+        - (a3 / w3) * (cos(w3 * realT + p3) - cos(p3));
     }
 
     void main() {
       vec2 uv = gl_FragCoord.xy / u_resolution;
-      float t = u_time * 0.08;
+      float t = warpedTime(u_time);
 
-      float stripeX = gl_FragCoord.x / u_fluteWidth;
+      // The glass pane itself ripples steadily: flute pitch widens and narrows in a
+      // slow wave travelling sideways across the pane (unwarped time — only what's
+      // behind the glass should speed up and slow erratically, not the glass itself).
+      // The ripple runs along x, the same axis the ridges repeat on, so every row
+      // shares the same phase — varying it by row instead would shift each row's
+      // flute boundaries independently and alias into a moiré grid.
+      float fluteWidth = u_fluteWidth * (1.0 + 0.22 * sin(gl_FragCoord.x * 0.006 + u_time * 0.6));
+
+      float stripeX = gl_FragCoord.x / fluteWidth;
       float localX = fract(stripeX) - 0.5;
       float ridgePhase = localX * PI;
       float normalX = sin(ridgePhase);
 
-      const float REFRACTION_STRENGTH = 0.03;
+      const float REFRACTION_STRENGTH = 0.035;
       vec2 refractedUV = uv + vec2(normalX * REFRACTION_STRENGTH, 0.0);
 
       vec3 color = colourAt(refractedUV, t);
       color = clamp(color * 1.05, 0.0, 1.0);
 
-      float highlight = pow(max(cos(ridgePhase), 0.0), 4.0);
-      color *= mix(0.78, 1.08, highlight);
-      color += highlight * 0.05;
+      // Sharper, more polished shading: a broad light/dark gradient across each flute,
+      // a thin dark seam right at the boundary between flutes, and a tight bright
+      // specular glint down each ridge centre.
+      float highlightWide = pow(max(cos(ridgePhase), 0.0), 3.0);
+      float highlightCore = pow(max(cos(ridgePhase), 0.0), 10.0);
+      float groove = smoothstep(0.0, 0.08, 0.5 - abs(localX));
 
-      gl_FragColor = vec4(color, 1.0);
+      float shade = mix(0.42, 1.05, highlightWide);
+      shade *= mix(0.65, 1.0, groove);
+      color *= shade;
+      color += highlightCore * 0.35;
+
+      gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
     }
   `;
 
