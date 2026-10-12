@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "title": "TEK TEK",
+  "description": "A browser techno builder. Shape the kick, snare and a chopped synthetic choir, set the tempo and mood, and it plays a 64-bar track that adds a layer on every pass until it peaks.",
+  "date": "2026-10-12",
+  "type": "html",
+  "status": "published",
+  "section": "Experiments",
+  "navTheme": "dark",
+  "indexStyle": {
+    "background": "#0a0b0d",
+    "color": "#ff2bd6"
+  }
+}
