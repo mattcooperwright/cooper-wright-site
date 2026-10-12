@@ -12,13 +12,18 @@ const fonts = [
   ...new Set(['body' as const, 'plain' as const, ...pages.map((p) => tileFontRole(p.data.indexStyle?.fontFamily))]),
 ];
 ---
-<Base title="Matt Cooper-Wright" fonts={fonts} fullBleed>
+<Base title="Matt Cooper-Wright" fonts={fonts} fullBleed navFixed>
   <KaleidoscopeBackground />
-  <div class="mx-auto max-w-6xl px-4 pb-12">
+  <div class="mx-auto max-w-6xl px-4 pt-12 pb-64">
     <div class="mb-8 inline-block bg-white px-4 py-2 shadow-sm" style="font-family: var(--font-plain)">
-      <h1 class="text-3xl font-semibold">Matt Cooper-Wright</h1>
+      <!-- One word per line; the spans keep the accessible name "Matt Cooper-Wright". -->
+      <h1
+        class="pb-[0.12em] text-[clamp(3rem,17vw,14rem)] leading-[0.85] font-semibold tracking-[-0.075em] text-transparent [-webkit-text-stroke:2px_var(--color-neutral-900)]"
+      >
+        <span class="block">Matt</span><span class="block">Cooper-</span><span class="block">Wright</span>
+      </h1>
     </div>
-    <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <ul class="grid grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pages.map((page) => (
         <li><Tile page={page} /></li>
       ))}
