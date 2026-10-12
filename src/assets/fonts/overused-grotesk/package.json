@@ -1,0 +1,6 @@
+{
+  "name": "overused-grotesk",
+  "version": "0.5.0-alpha.2",
+  "license": "OFL-1.1",
+  "description": "Vendored copy of Overused Grotesk, pinned to github.com/RandomMaerks/Overused-Grotesk at release v0.5-alpha.2. Not an installable package; read by src/lib/font-faces.ts like a Fontsource package."
+}

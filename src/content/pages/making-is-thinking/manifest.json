@@ -9,5 +9,5 @@
   "navTheme": "light",
   "fonts": ["poster", "rounded"],
   "hydrate": true,
-  "indexStyle": { "background": "#F7F7F2", "color": "#101720", "fontFamily": "poster" }
+  "indexStyle": { "background": "#101720", "color": "#F7F7F2", "fontFamily": "poster" }
 }

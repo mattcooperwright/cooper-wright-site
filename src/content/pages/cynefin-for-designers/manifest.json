@@ -8,5 +8,5 @@
   "section": "Writing",
   "navTheme": "light",
   "fonts": ["serif", "geometric"],
-  "indexStyle": { "background": "#ffffff", "color": "#1a1a1a", "fontFamily": "serif" }
+  "indexStyle": { "background": "#1a1a1a", "color": "#ffffff", "fontFamily": "serif" }
 }

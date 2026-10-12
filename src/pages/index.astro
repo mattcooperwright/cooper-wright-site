@@ -6,18 +6,25 @@ import { homePages, tileFontRole } from '../lib/home';
 import { getListedPages } from '../lib/pages';
 
 const pages = homePages(await getListedPages());
-// body for the shared nav text, plain for the home page's own heading and default tiles,
-// plus any other font roles the tiles use.
+// body for the shared nav text, display for the page's own heading, plain for default
+// tiles, plus any other font roles the tiles use.
 const fonts = [
-  ...new Set(['body' as const, 'plain' as const, ...pages.map((p) => tileFontRole(p.data.indexStyle?.fontFamily))]),
+  ...new Set([
+    'body' as const,
+    'display' as const,
+    'plain' as const,
+    ...pages.map((p) => tileFontRole(p.data.indexStyle?.fontFamily)),
+  ]),
 ];
 ---
 <Base title="Matt Cooper-Wright" fonts={fonts} fullBleed>
   <FlutedGlassBackground />
   <div class="mx-auto max-w-6xl px-4 pb-12">
-    <div class="mb-8 inline-block bg-white px-4 py-2 shadow-sm" style="font-family: var(--font-plain)">
-      <h1 class="text-3xl font-semibold">Matt Cooper-Wright</h1>
-    </div>
+    <h1
+      class="font-display mb-10 text-[14vw] font-bold leading-[0.9] tracking-tight text-white [text-shadow:0_4px_30px_rgba(0,0,0,0.45)] sm:text-8xl lg:text-9xl"
+    >
+      Matt Cooper-Wright
+    </h1>
     <ul class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pages.map((page) => (
         <li><Tile page={page} /></li>

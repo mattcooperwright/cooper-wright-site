@@ -1,10 +1,10 @@
 # Fonts
 
-All fonts are self-hosted from pinned Fontsource npm packages. Nothing loads from an external font host. Pages refer to fonts by role, never by family name, so a family can be swapped in one place.
+All fonts are self-hosted: most as pinned Fontsource npm packages, one (Overused Grotesk) as a vendored copy pinned to a specific upstream release, because it isn't published to Fontsource. Nothing loads from an external font host. Pages refer to fonts by role, never by family name, so a family can be swapped in one place.
 
 | Family | Role | Source | Version | Licence |
 | --- | --- | --- | --- | --- |
-| Inter | display | `@fontsource-variable/inter` | 5.3.0 | OFL-1.1 |
+| Overused Grotesk | display | vendored, `github.com/RandomMaerks/Overused-Grotesk` @ `v0.5-alpha.2` | 0.5.0-alpha.2 | OFL-1.1 |
 | Hanken Grotesk | body | `@fontsource-variable/hanken-grotesk` | 5.3.0 | OFL-1.1 |
 | Newsreader | serif | `@fontsource-variable/newsreader` | 5.3.0 | OFL-1.1 |
 | Outfit | geometric | `@fontsource-variable/outfit` | 5.3.0 | OFL-1.1 |
@@ -34,3 +34,14 @@ Only the roles a page lists are loaded on that page. A role used without being l
 ## Adding or changing a family
 
 Install the package pinned to an exact version, confirm its licence is OFL or another open licence, and update `src/lib/fonts.ts` and the table above. `npm test` checks the recorded version, licence and weights against the installed package. Ask before adding any font from outside Fontsource.
+
+**If a family isn't on Fontsource**, vendor it instead of linking an external font host: download the pinned release's font file, subset it to the `latin`/`latin-ext` unicode ranges above with `fonttools`/`pyftsubset` (a one-off local tool, not a project dependency), and lay it out as a local package with the exact shape `font-faces.ts` expects, so the rest of the font pipeline needs no changes:
+```
+src/assets/fonts/<family>/
+  package.json   # { "name", "version", "license" } — read by tests/fonts.test.ts like a Fontsource package.json
+  <family>.css   # one @font-face block per subset, src: url(./files/*.woff2), filenames ending -<subset>-<tag>-normal.woff2
+  files/
+    <family>-latin-<tag>-normal.woff2
+    <family>-latin-ext-<tag>-normal.woff2
+```
+In `fonts.ts`, point `package` at this directory as an **absolute path** (e.g. `fileURLToPath(new URL('../assets/fonts/<family>', import.meta.url))`), not a relative one — it has to resolve the same way for `font-faces.ts`'s `require.resolve` (anchored at `src/lib/`) and for Astro's local font provider (which resolves relative to the project root), and an absolute path is the only thing both agree on. Overused Grotesk (`display` role) is the example of this pattern.

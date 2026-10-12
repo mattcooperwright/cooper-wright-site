@@ -9,5 +9,5 @@
   "navTheme": "light",
   "fonts": ["grotesque"],
   "hydrate": true,
-  "indexStyle": { "background": "#F3F0EA", "color": "#0A0A0A", "fontFamily": "grotesque" }
+  "indexStyle": { "background": "#0A0A0A", "color": "#F3F0EA", "fontFamily": "grotesque" }
 }
