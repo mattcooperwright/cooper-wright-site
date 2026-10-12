@@ -9,15 +9,15 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | Field | Type | Required | Default | Notes |
 | --- | --- | --- | --- | --- |
 | `schemaVersion` | `1` | yes | | Always the number 1 for this version. |
-| `title` | string | yes | | Used in the menu, the index, `<title>` and `og:title`. Must not be empty. |
+| `title` | string | yes | | Used on tiles, `<title>` and `og:title`. Must not be empty. |
 | `description` | string | yes | | Used in the index, the description meta tag and `og:description`. |
-| `date` | date | yes | | `YYYY-MM-DD`. Sorts pages within a menu group and on the index, newest first. |
+| `date` | date | yes | | `YYYY-MM-DD`. Sorts pages on the home page and section indexes, newest first. |
 | `type` | `md`, `html`, `mdx`, `react` or `external` | yes | | Decides which payload the folder holds and how it renders. See [Types](#types). |
 | `status` | `published`, `unlisted` or `draft` | no | `published` | See [Status](#status). |
-| `section` | `Writing`, `Projects` or `Experiments` | no | | Menu group. Pages without one go under "More". |
+| `section` | `Writing`, `Projects` or `Experiments` | no | | Which section index lists the page. The home page shows the three newest Writing pages. A page with no section is listed nowhere, but still loads by URL and appears in the sitemap. |
 | `updated` | date | no | | Date of the last meaningful change. |
 | `tags` | array of strings | no | | Shown on md posts and as RSS categories. |
-| `menuOrder` | number | no | | Lower numbers come first within a menu group. Pages without one follow, by date. |
+| `menuOrder` | number | no | | Lower numbers come first on the section index. Pages without one follow, by date. |
 | `navTheme` | `light`, `dark` or `auto` | no | `auto` | Colours of the header, or of the slim bar on html pages. `auto` follows the visitor's system setting. |
 | `image` | path | no | | Share image, as a site-root path to a file in `public/`, such as `/images/hello.png`. Becomes an absolute `og:image`. |
 | `indexStyle` | object | no | | Colours and font of this page's home page tile. `background` and `color` are CSS colours (default white and `#171717`); the build warns, without failing, if their contrast is below 4.5:1. `fontFamily` is a font role name such as `serif` or `poster`; anything else uses the body role. |
@@ -28,13 +28,13 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 
 ## Status
 
-| Status | Production build | Dev server | Menu and index | Sitemap | `noindex` |
+| Status | Production build | Dev server | Home and section indexes | Sitemap | `noindex` |
 | --- | --- | --- | --- | --- | --- |
 | `published` | built | renders | listed | included | no |
 | `unlisted` | built, loads by URL | renders | left out | left out | yes |
 | `draft` | not built | renders | left out | left out | yes |
 
-The sitemap (`/sitemap.xml`) is built from `getListedPages()` in `src/lib/pages.ts`, so only published pages on this site appear. External pages are left out. The RSS feed (`/rss.xml`) lists published Writing pages. Section indexes at `/writing/`, `/projects/` and `/experiments/` list each section's published pages, newest first.
+The sitemap (`/sitemap.xml`) is built from `getListedPages()` in `src/lib/pages.ts`, so only published pages on this site appear. External pages are left out. The RSS feed (`/rss.xml`) lists published Writing pages. Section indexes at `/writing/`, `/projects/` and `/experiments/` show each section's published pages as tiles (see [Menu](#menu)).
 
 ## Types
 
@@ -42,7 +42,7 @@ The sitemap (`/sitemap.xml`) is built from `getListedPages()` in `src/lib/pages.
 | --- | --- | --- | --- |
 | `md` | `index.md` | Post layout: title, UK date, updated date, tags, reading time, link to section. Body in the serif role, headings in the display role. | anyone, including chat and machine senders |
 | `html` | `index.html` | Sandboxed shell: a slim bar, then the payload in a `srcdoc` iframe with `sandbox="allow-scripts"`. | anyone, including chat and machine senders |
-| `external` | none | A menu and index link to `url`. | anyone, including chat and machine senders |
+| `external` | none | A tile linking to `url`. | anyone, including chat and machine senders |
 | `mdx` | `index.mdx` | Simple article layout. | human pull request only |
 | `react` | `index.tsx` | Full-bleed component, static unless `hydrate`. | human pull request only |
 
@@ -60,9 +60,11 @@ mdx and react execute code at build time, so they only arrive through a reviewed
 
 Anything else, including the site's own files and self-hosted fonts, is blocked. Pin library versions in script URLs. `/gsap-sandbox/` is an unlisted fixture that proves animation libraries work.
 
-## Menu order
+## Menu
 
-Groups appear in this order: Writing, Projects, Experiments, then More for pages with no section. Empty groups are hidden. Within a group, pages sort by `menuOrder` ascending, then by `date`, newest first. External pages appear in the menu and open in a new tab with `rel="noopener noreferrer"`.
+Every page has the same fixed header: a Home link, then Writing, Projects and Experiments, each linking to its section index. The header lists no individual pages. On html pages the slim bar above the iframe carries the same links.
+
+The home page shows the three newest published Writing pages as tiles. Each section index shows all of its published pages as tiles, sorted by `menuOrder` ascending, then by `date`, newest first. External pages open in a new tab with `rel="noopener noreferrer"`.
 
 ## Examples
 

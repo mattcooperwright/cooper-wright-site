@@ -3,8 +3,8 @@ import { Font } from 'astro:assets';
 import '../styles/global.css';
 import { fontVariable, type FontRole } from '../lib/fonts';
 import HeadMeta from '../components/HeadMeta.astro';
-import { SECTIONS } from '../lib/manifest';
-import { getMenuGroups, isExternal, pageHref, sectionSlug, type Page } from '../lib/pages';
+import SiteHeader from '../components/SiteHeader.astro';
+import type { Page } from '../lib/pages';
 
 interface Props {
   title: string;
@@ -19,11 +19,7 @@ interface Props {
 const { page } = Astro.props;
 const title = page?.data.title ?? Astro.props.title;
 const description = page?.data.description ?? Astro.props.description;
-const navTheme = page?.data.navTheme ?? 'auto';
 const fonts = [...new Set([...(Astro.props.fonts ?? []), ...(page?.data.fonts ?? [])])];
-
-const groups = await getMenuGroups();
-const current = Astro.url.pathname.replace(/\/$/, '');
 ---
 <!doctype html>
 <html lang="en">
@@ -31,47 +27,9 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     <HeadMeta title={title} description={description} page={page} />
     {fonts.map((role) => <Font cssVariable={fontVariable(role)} />)}
   </head>
-  <body class="font-body text-neutral-900 bg-white">
-    <header
-      data-nav-theme={navTheme}
-      class="mb-12 data-[nav-theme=light]:bg-white data-[nav-theme=light]:text-neutral-900 data-[nav-theme=dark]:bg-neutral-900 data-[nav-theme=dark]:text-white data-[nav-theme=auto]:bg-white data-[nav-theme=auto]:text-neutral-900 data-[nav-theme=auto]:dark:bg-neutral-900 data-[nav-theme=auto]:dark:text-white"
-    >
-      <nav aria-label="Main" class="mx-auto flex max-w-3xl flex-wrap gap-x-10 gap-y-4 px-4 py-6">
-        <a href="/" class="font-semibold">Home</a>
-        {groups.map((group) => (
-          <div>
-            <h2 class="mb-1 text-xs uppercase tracking-wide opacity-70">
-              {(SECTIONS as readonly string[]).includes(group.label) ? (
-                <a href={`/${sectionSlug(group.label as (typeof SECTIONS)[number])}/`}>{group.label}</a>
-              ) : (
-                group.label
-              )}
-            </h2>
-            <ul class="grid gap-1">
-              {group.pages.map((item) => (
-                <li>
-                  {isExternal(item) ? (
-                    <a href={pageHref(item)} target="_blank" rel="noopener noreferrer">
-                      {item.data.title} <span aria-hidden="true">↗</span>
-                      <span class="sr-only">(opens in a new tab)</span>
-                    </a>
-                  ) : (
-                    <a
-                      href={pageHref(item)}
-                      aria-current={current === `/${item.id}` ? 'page' : undefined}
-                      class="aria-[current=page]:underline"
-                    >
-                      {item.data.title}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </nav>
-    </header>
-    <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pb-12'}>
+  <body class="font-body text-neutral-900 bg-white pt-12">
+    <SiteHeader page={page} />
+    <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pt-12 pb-12'}>
       <slot />
     </main>
   </body>

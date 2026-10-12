@@ -64,3 +64,8 @@ The grid now sits over `src/components/KaleidoscopeBackground.astro`, a fixed fu
 
 Tiles lost their rounded corners and their `border border-black/10` outline, replaced by a plain drop shadow, since a flat, sharp-edged card reads more clearly against the animated backdrop than a bordered, rounded one. The keyboard focus ring stays, for accessibility.
 
+
+## 2026-10-12: Section-only menu, three articles on the home page
+The menu no longer lists pages. A fixed header on every page holds a Home link and the three section links, so any page can get back home; html pages carry the same links in their slim bar. Pages without a section (the old "More" group) are no longer linked from any menu or index, though they still build and stay in the sitemap.
+
+The home page now shows only the three newest published Writing pages, with a link to all writing. The section indexes became tile grids over the kaleidoscope backdrop, ordered by `menuOrder` then date. The Writing index uses an `rgb` palette: red, green and blue held still rather than drifting round the colour wheel. Each mirrored pair of slices shares a hue, because the mirrored slices overlap and would otherwise blend into orange and magenta. Projects and Experiments keep the home page palette.

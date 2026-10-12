@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { homePages, tileFontRole } from '../src/lib/home';
+import { homePages, recentArticles, tileFontRole } from '../src/lib/home';
 
 const page = (id: string, status: string, date: string) => ({ id, data: { status, date: new Date(date) } });
 
@@ -38,5 +38,25 @@ describe('tileFontRole', () => {
     expect(tileFontRole('Georgia')).toBe('plain');
     expect(tileFontRole('var(--font-serif)')).toBe('plain');
     expect(tileFontRole(undefined)).toBe('plain');
+  });
+});
+
+describe('recentArticles', () => {
+  const article = (id: string, status: string, date: string, section?: string) => ({
+    id,
+    data: { status, date: new Date(date), section },
+  });
+  const pages = [
+    article('w1', 'published', '2026-01-01', 'Writing'),
+    article('exp', 'published', '2026-10-01', 'Experiments'),
+    article('w2', 'published', '2026-05-01', 'Writing'),
+    article('draft', 'draft', '2026-09-01', 'Writing'),
+    article('w3', 'published', '2026-03-01', 'Writing'),
+    article('none', 'published', '2026-09-15'),
+    article('w4', 'published', '2025-01-01', 'Writing'),
+  ];
+
+  it('keeps the three newest published Writing pages', () => {
+    expect(recentArticles(pages).map((p) => p.id)).toEqual(['w2', 'w3', 'w1']);
   });
 });

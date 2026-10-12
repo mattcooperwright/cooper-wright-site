@@ -1,0 +1,35 @@
+---
+// The fixed bar at the top of every page built on Base: a home link and the three section
+// links, nothing else. Section pages list their own articles.
+import { SECTIONS } from '../lib/manifest';
+import { sectionSlug, type Page } from '../lib/pages';
+
+interface Props {
+  page?: Page;
+}
+
+const { page } = Astro.props;
+const navTheme = page?.data.navTheme ?? 'auto';
+const path = Astro.url.pathname.replace(/\/$/, '');
+// A section counts as current on its own index page and on any page that belongs to it.
+const currentSection = SECTIONS.find((s) => path === `/${sectionSlug(s)}` || page?.data.section === s);
+---
+<header
+  data-nav-theme={navTheme}
+  class="fixed inset-x-0 top-0 z-50 h-12 shadow-sm data-[nav-theme=light]:bg-white data-[nav-theme=light]:text-neutral-900 data-[nav-theme=dark]:bg-neutral-900 data-[nav-theme=dark]:text-white data-[nav-theme=auto]:bg-white data-[nav-theme=auto]:text-neutral-900 data-[nav-theme=auto]:dark:bg-neutral-900 data-[nav-theme=auto]:dark:text-white"
+>
+  <nav aria-label="Main" class="mx-auto flex h-full max-w-6xl items-center gap-6 px-4 text-xs uppercase tracking-wide">
+    <a href="/" aria-current={path === '' ? 'page' : undefined} class="mr-auto font-semibold aria-[current=page]:underline">
+      Home
+    </a>
+    {SECTIONS.map((section) => (
+      <a
+        href={`/${sectionSlug(section)}/`}
+        aria-current={section === currentSection ? (path === `/${sectionSlug(section)}` ? 'page' : 'true') : undefined}
+        class="hover:underline aria-[current]:underline"
+      >
+        {section}
+      </a>
+    ))}
+  </nav>
+</header>

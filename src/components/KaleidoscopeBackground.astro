@@ -2,8 +2,15 @@
 // Fixed backdrop behind the home page tile grid: a slow-turning kaleidoscope of colour
 // with a fine grain overlay for a glassy, textured finish. Plain canvas 2D, no dependencies.
 // Freezes on a single frame when the visitor prefers reduced motion.
+// palette="rgb" holds the colour to pure red, green and blue (the Writing index);
+// the default palette drifts slowly round the colour wheel.
+interface Props {
+  palette?: 'default' | 'rgb';
+}
+
+const { palette = 'default' } = Astro.props;
 ---
-<canvas id="kaleidoscope-bg" class="pointer-events-none fixed inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+<canvas id="kaleidoscope-bg" data-palette={palette} class="pointer-events-none fixed inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
 <script>
   const canvasEl = document.getElementById('kaleidoscope-bg');
 
@@ -14,7 +21,14 @@
     if (context) {
       const ctx = context;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const SLICES = 8; // mirrored kaleidoscope segments
+      const rgb = canvas.dataset.palette === 'rgb';
+      // Hues, one per slice in turn. Each odd slice is mirrored onto the wedge of the slice
+      // before it, so RGB repeats each hue across a pair to keep the colours from mixing.
+      const HUES = rgb
+        ? [0, 0, 120, 120, 225, 225] // red, green, blue
+        : [210, 280, 330, 15, 165]; // blue, violet, magenta, amber, teal
+      const HUE_DRIFT = rgb ? 0 : 40; // degrees the hues travel per unit of t
+      const SLICES = rgb ? 6 : 8; // mirrored kaleidoscope segments
       const RENDER_SCALE = 0.5; // render below viewport resolution; the canvas CSS size stretches it back up
 
       let width = 0;
@@ -45,9 +59,6 @@
         grainPattern = ctx.createPattern(grain, 'repeat');
       }
 
-      // Hues that slowly drift and cross-fade into one another, one per slice.
-      const HUES = [210, 280, 330, 15, 165]; // blue, violet, magenta, amber, teal
-
       function draw(time: number) {
         const t = (reduceMotion ? 0 : time) * 0.00004;
         const cx = width / 2;
@@ -76,7 +87,7 @@
           const localRadius = radius * (0.32 + 0.14 * Math.sin(t * 0.7 + i * 1.7));
           const bx = Math.cos(localAngle) * localRadius;
           const by = Math.sin(localAngle) * localRadius;
-          const hue = (HUES[i % HUES.length] + t * 40) % 360;
+          const hue = (HUES[i % HUES.length] + t * HUE_DRIFT) % 360;
           const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, radius * 0.55);
           gradient.addColorStop(0, `hsla(${hue}, 85%, 62%, 0.6)`);
           gradient.addColorStop(1, 'hsla(0, 0%, 0%, 0)');

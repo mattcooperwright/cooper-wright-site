@@ -9,6 +9,15 @@ export function homePages<T extends { data: { status: string; date: Date } }>(pa
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
+// The home page shows only the newest published Writing pages.
+export const HOME_ARTICLE_COUNT = 3;
+export function recentArticles<T extends { data: { status: string; date: Date; section?: string } }>(
+  pages: T[],
+  count = HOME_ARTICLE_COUNT,
+): T[] {
+  return homePages(pages.filter(({ data }) => data.section === 'Writing')).slice(0, count);
+}
+
 // A tile uses indexStyle.fontFamily only when it names a font role; otherwise the plain role.
 export function tileFontRole(fontFamily?: string): FontRole {
   return (FONT_ROLES as readonly string[]).includes(fontFamily ?? '') ? (fontFamily as FontRole) : 'plain';

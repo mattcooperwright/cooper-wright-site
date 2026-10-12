@@ -7,7 +7,6 @@ import { contrastRatio, parseColor } from './contrast';
 import { TILE_DEFAULTS } from './home';
 
 export type Page = CollectionEntry<'pages'>;
-export type MenuGroup = { label: string; pages: Page[] };
 
 const PAGES_DIR = join(process.cwd(), 'src/content/pages');
 const PUBLIC_DIR = join(process.cwd(), 'public');
@@ -174,23 +173,9 @@ export async function getSectionPages(section: Section): Promise<Page[]> {
   return (await getListedPages()).filter((p) => p.data.section === section).sort(newestFirst);
 }
 
-const byMenuOrderThenNewest = (a: Page, b: Page) =>
-  (a.data.menuOrder ?? Infinity) - (b.data.menuOrder ?? Infinity) ||
-  b.data.date.getTime() - a.data.date.getTime();
-
-// Writing, Projects, Experiments, then pages with no section under "More".
-export async function getMenuGroups(): Promise<MenuGroup[]> {
-  const pages = await getListedPages();
-  const labels = [...SECTIONS, 'More'];
-  return labels
-    .map((label) => ({
-      label,
-      pages: pages
-        .filter((p) => (p.data.section ?? 'More') === label)
-        .sort(byMenuOrderThenNewest),
-    }))
-    .filter((group) => group.pages.length > 0);
-}
+// Section index order: menuOrder ascending, then pages without one by date, newest first.
+export const byMenuOrderThenNewest = (a: Page, b: Page) =>
+  (a.data.menuOrder ?? Infinity) - (b.data.menuOrder ?? Infinity) || newestFirst(a, b);
 
 export function isExternal(page: Page): boolean {
   return page.data.type === 'external';
