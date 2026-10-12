@@ -57,6 +57,12 @@ The site URL is https://matt.cooper-wright.com. The sitemap is a small custom en
 ## 2026-10-11: Home page shows every published page in one grid
 The home page shows all published pages as tiles in one responsive grid, newest first by date. There is no featured or pinned slot: a `featured` field is deferred until the list outgrows a single grid. Tiles take their colours and font role from `indexStyle`, and the tile markup lives in `src/components/Tile.astro` so it can be restyled in one place.
 
+## 2026-10-12: Home page redesign — new font role, animated backdrop, flat tiles
+Added a `plain` font role (Onest, OFL-1.1, via `@fontsource-variable/onest`) for the home page's own heading and for tiles with no `indexStyle.fontFamily`, in place of the `body` role. It reads as a simpler, more neutral grotesque than the site's other sans roles, and sits a step away from `grotesque` (DM Sans) itself.
+
+The grid now sits over `src/components/KaleidoscopeBackground.astro`, a fixed full-viewport canvas behind the tiles: a slow mirrored rotation of drifting colour with a fine grain overlay, built with plain canvas 2D so it adds no dependency. It freezes on a single frame under `prefers-reduced-motion`. The page's own heading moved into a small flat white panel so it stays legible over the animated colour.
+
+Tiles lost their rounded corners and their `border border-black/10` outline, replaced by a plain drop shadow, since a flat, sharp-edged card reads more clearly against the animated backdrop than a bordered, rounded one. The keyboard focus ring stays, for accessibility.
 
 ## 2026-10-12: Titles and wordmarks are verbatim
 Manifest titles and visible wordmarks are kept exactly as the author wrote them. Their spelling and case are never corrected. The prompt was the INFIINITE ACIID page, whose title and logo had been changed to "Infiniite Aciid". The brand is INFIINITE ACIID, all capitals with that spelling, on purpose. The manifest title, the html `<title>` and the logo now match it. Internal identifiers such as the slug and the storage key were left as they were.
