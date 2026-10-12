@@ -34,4 +34,5 @@ A bad manifest or a missing payload fails the build.
 - Ask before adding any external script or font. Fonts are self-hosted only; never link a font host.
   Exception: sandboxed html payloads may use what their CSP allows (cdnjs, jsdelivr, Google Fonts).
 - Style text with font roles (`font-body`, `var(--font-serif)`), never family names.
+- Titles and names are verbatim. Never correct the spelling or case of a manifest title or visible wordmark.
 - Record significant decisions in `docs/decisions.md`.

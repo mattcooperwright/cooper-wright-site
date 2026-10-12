@@ -86,3 +86,8 @@ The tile's background fill is now its own `absolute inset-0` layer, separate fro
 ## 2026-10-12: Tiles regain rounded corners
 The 2026-10-12 redesign deliberately squared off the tiles' corners for a flatter card look. On request, tiles are now `rounded-[18px]` again — a bigger, more deliberate radius than the old default, not a reversion to the original `rounded-lg`. `overflow-hidden` (unchanged) clips the background fill and the mask cutout to this same rounded shape.
 
+## 2026-10-12: Titles and wordmarks are verbatim
+Manifest titles and visible wordmarks are kept exactly as the author wrote them. Their spelling and case are never corrected. The prompt was the INFIINITE ACIID page, whose title and logo had been changed to "Infiniite Aciid". The brand is INFIINITE ACIID, all capitals with that spelling, on purpose. The manifest title, the html `<title>` and the logo now match it. Internal identifiers such as the slug and the storage key were left as they were.
+
+## 2026-10-12: Home page name outlined on three lines, menu pinned to the bottom
+Merged with the second-pass home page above. The name keeps that pass's display font and has no panel, but it now runs one word per line at -0.075em tracking and 0.85 leading, drawn as a white outline with no fill. A drop shadow keeps it legible over the glass backdrop, since a text-shadow would show through the transparent fill. Tile titles are 3em with leading-none and wrap long words. The footer nav is pinned to the bottom of the viewport on the home page only, through `Base.astro`'s `navFixed` prop; other pages keep it in the flow below their content.
