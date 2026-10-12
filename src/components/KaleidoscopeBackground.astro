@@ -1,0 +1,105 @@
+---
+// Fixed backdrop behind the home page tile grid: a slow-turning kaleidoscope of colour
+// with a fine grain overlay for a glassy, textured finish. Plain canvas 2D, no dependencies.
+// Freezes on a single frame when the visitor prefers reduced motion.
+---
+<canvas id="kaleidoscope-bg" class="pointer-events-none fixed inset-0 -z-10 h-full w-full" aria-hidden="true"></canvas>
+<script>
+  const canvasEl = document.getElementById('kaleidoscope-bg');
+
+  if (canvasEl instanceof HTMLCanvasElement) {
+    const canvas = canvasEl;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+      const ctx = context;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const SLICES = 8; // mirrored kaleidoscope segments
+      const RENDER_SCALE = 0.5; // render below viewport resolution; the canvas CSS size stretches it back up
+
+      let width = 0;
+      let height = 0;
+
+      function resize() {
+        width = canvas.width = Math.ceil(window.innerWidth * RENDER_SCALE);
+        height = canvas.height = Math.ceil(window.innerHeight * RENDER_SCALE);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // A small tile of grain, generated once and repeated across the canvas at low opacity.
+      const grainSize = 128;
+      const grain = document.createElement('canvas');
+      grain.width = grainSize;
+      grain.height = grainSize;
+      const gctx = grain.getContext('2d');
+      let grainPattern: CanvasPattern | null = null;
+      if (gctx) {
+        const img = gctx.createImageData(grainSize, grainSize);
+        for (let i = 0; i < img.data.length; i += 4) {
+          const v = 200 + Math.random() * 55;
+          img.data[i] = img.data[i + 1] = img.data[i + 2] = v;
+          img.data[i + 3] = 255;
+        }
+        gctx.putImageData(img, 0, 0);
+        grainPattern = ctx.createPattern(grain, 'repeat');
+      }
+
+      // Hues that slowly drift and cross-fade into one another, one per slice.
+      const HUES = [210, 280, 330, 15, 165]; // blue, violet, magenta, amber, teal
+
+      function draw(time: number) {
+        const t = (reduceMotion ? 0 : time) * 0.00004;
+        const cx = width / 2;
+        const cy = height / 2;
+        const radius = Math.max(width, height) * 0.8;
+
+        ctx.fillStyle = '#0a0a12';
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        const sliceAngle = (Math.PI * 2) / SLICES;
+        for (let i = 0; i < SLICES; i++) {
+          ctx.save();
+          ctx.rotate(sliceAngle * i);
+          if (i % 2 === 1) ctx.scale(1, -1);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, radius, 0, sliceAngle);
+          ctx.closePath();
+          ctx.clip();
+          ctx.globalCompositeOperation = 'screen';
+
+          // A colour blob kept inside this wedge, drifting slowly within it.
+          const localAngle = sliceAngle * 0.5 + Math.sin(t + i) * sliceAngle * 0.35;
+          const localRadius = radius * (0.32 + 0.14 * Math.sin(t * 0.7 + i * 1.7));
+          const bx = Math.cos(localAngle) * localRadius;
+          const by = Math.sin(localAngle) * localRadius;
+          const hue = (HUES[i % HUES.length] + t * 40) % 360;
+          const gradient = ctx.createRadialGradient(bx, by, 0, bx, by, radius * 0.55);
+          gradient.addColorStop(0, `hsla(${hue}, 85%, 62%, 0.6)`);
+          gradient.addColorStop(1, 'hsla(0, 0%, 0%, 0)');
+          ctx.fillStyle = gradient;
+          ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+
+          ctx.restore();
+        }
+        ctx.restore();
+
+        if (grainPattern) {
+          ctx.save();
+          ctx.globalAlpha = 0.05;
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.fillStyle = grainPattern;
+          ctx.fillRect(0, 0, width, height);
+          ctx.restore();
+        }
+
+        if (!reduceMotion) requestAnimationFrame(draw);
+      }
+
+      requestAnimationFrame(draw);
+    }
+  }
+</script>

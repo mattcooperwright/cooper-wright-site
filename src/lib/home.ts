@@ -9,9 +9,9 @@ export function homePages<T extends { data: { status: string; date: Date } }>(pa
     .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
-// A tile uses indexStyle.fontFamily only when it names a font role; otherwise the body role.
+// A tile uses indexStyle.fontFamily only when it names a font role; otherwise the plain role.
 export function tileFontRole(fontFamily?: string): FontRole {
-  return (FONT_ROLES as readonly string[]).includes(fontFamily ?? '') ? (fontFamily as FontRole) : 'body';
+  return (FONT_ROLES as readonly string[]).includes(fontFamily ?? '') ? (fontFamily as FontRole) : 'plain';
 }
 
 // Tile colours when a page's indexStyle doesn't set them. Also used by the contrast check.

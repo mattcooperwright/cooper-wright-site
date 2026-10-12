@@ -18,6 +18,7 @@
   --font-humanist: var(--webfont-humanist, var(--font-sans));
   --font-rounded: var(--webfont-rounded, var(--font-sans));
   --font-grotesque: var(--webfont-grotesque, var(--font-sans));
+  --font-plain: var(--webfont-plain, var(--font-sans));
 }
 
 @layer base {

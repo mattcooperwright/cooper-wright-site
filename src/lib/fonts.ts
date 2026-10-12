@@ -10,6 +10,7 @@ export const FONT_ROLES = [
   'humanist',
   'rounded',
   'grotesque',
+  'plain',
 ] as const;
 
 export type FontRole = (typeof FONT_ROLES)[number];
@@ -107,6 +108,16 @@ export const FONT_FAMILIES: FontFamily[] = [
     // opsz: optical sizing, as the archive's Google Fonts import had.
     stylesheets: ['opsz.css', 'opsz-italic.css'],
     weights: '100 1000',
+    fallback: 'sans-serif',
+  },
+  {
+    role: 'plain',
+    family: 'Onest',
+    package: '@fontsource-variable/onest',
+    version: '5.3.0',
+    licence: 'OFL-1.1',
+    stylesheets: ['wght.css'],
+    weights: '100 900',
     fallback: 'sans-serif',
   },
 ];
