@@ -57,3 +57,6 @@ The site URL is https://matt.cooper-wright.com. The sitemap is a small custom en
 ## 2026-10-11: Home page shows every published page in one grid
 The home page shows all published pages as tiles in one responsive grid, newest first by date. There is no featured or pinned slot: a `featured` field is deferred until the list outgrows a single grid. Tiles take their colours and font role from `indexStyle`, and the tile markup lives in `src/components/Tile.astro` so it can be restyled in one place.
 
+
+## 2026-10-12: Titles and wordmarks are verbatim
+Manifest titles and visible wordmarks are kept exactly as the author wrote them. Their spelling and case are never corrected. The prompt was the INFIINITE ACIID page, whose title and logo had been changed to "Infiniite Aciid". The brand is INFIINITE ACIID, all capitals with that spelling, on purpose. The manifest title, the html `<title>` and the logo now match it. Internal identifiers such as the slug and the storage key were left as they were.
