@@ -34,9 +34,9 @@ describe('tileFontRole', () => {
     expect(tileFontRole('poster')).toBe('poster');
   });
 
-  it('falls back to body for anything else', () => {
-    expect(tileFontRole('Georgia')).toBe('body');
-    expect(tileFontRole('var(--font-serif)')).toBe('body');
-    expect(tileFontRole(undefined)).toBe('body');
+  it('falls back to plain for anything else', () => {
+    expect(tileFontRole('Georgia')).toBe('plain');
+    expect(tileFontRole('var(--font-serif)')).toBe('plain');
+    expect(tileFontRole(undefined)).toBe('plain');
   });
 });
