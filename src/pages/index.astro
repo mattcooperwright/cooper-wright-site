@@ -22,10 +22,26 @@ const fonts = [
   <div class="mx-auto max-w-6xl px-4 pt-12 pb-64">
     <!-- One word per line; the spans keep the accessible name "Matt Cooper-Wright". -->
     <h1
-      class="reeded-name font-display mb-10 pb-[0.12em] text-[clamp(2.75rem,11vw,9rem)] leading-[0.85] font-bold tracking-[-0.075em]"
+      class="inset-name font-display mb-10 pb-[0.12em] text-[clamp(2.75rem,11vw,9rem)] leading-[0.85] font-bold tracking-[-0.075em]"
     >
       <span class="block">Matt</span><span class="block">Cooper-</span><span class="block">Wright</span>
     </h1>
+    <svg class="absolute h-0 w-0" aria-hidden="true" focusable="false">
+      <filter id="name-inset" x="-5%" y="-5%" width="110%" height="110%">
+        <feComponentTransfer in="SourceAlpha" result="inverse">
+          <feFuncA type="table" tableValues="1 0" />
+        </feComponentTransfer>
+        <feGaussianBlur in="inverse" stdDeviation="3" />
+        <feOffset dx="0" dy="2" result="offset" />
+        <feFlood flood-color="#000" flood-opacity="0.85" />
+        <feComposite in2="offset" operator="in" />
+        <feComposite in2="SourceAlpha" operator="in" result="shadow" />
+        <feMerge>
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="shadow" />
+        </feMerge>
+      </filter>
+    </svg>
     <ul class="grid grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pages.map((page) => (
         <li><Tile page={page} /></li>
@@ -35,36 +51,9 @@ const fonts = [
 </Base>
 
 <style>
-  /* The name as a piece of the backdrop's reeded glass, turned 90 degrees: fine horizontal
-     ridges (highlight, clear band, shadowed groove) over a milky version of the shader's
-     iridescent palette, drifting slowly. Falls back to plain white without background-clip. */
-  .reeded-name {
-    color: white;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.35));
-  }
-  @supports ((background-clip: text) or (-webkit-background-clip: text)) {
-    .reeded-name {
-      color: transparent;
-      background-image:
-        repeating-linear-gradient(
-          to bottom,
-          rgba(255, 255, 255, 0.9) 0,
-          rgba(255, 255, 255, 0) 0.022em,
-          rgba(40, 20, 70, 0.22) 0.05em,
-          rgba(255, 255, 255, 0.9) 0.07em
-        ),
-        linear-gradient(100deg, #ffd3e6, #cdf3ff, #ddd4ff, #fff0cf, #c9ffe9, #ffd3e6);
-      background-size: 100% 100%, 300% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      animation: reeded-drift 24s ease-in-out infinite alternate;
-    }
-  }
-  @keyframes reeded-drift {
-    from { background-position: 0 0, 0% 50%; }
-    to { background-position: 0 0, 100% 50%; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .reeded-name { animation: none; }
+  /* Near-black name with a faint black inner shadow, from the inline SVG filter above. */
+  .inset-name {
+    color: #1a1a1a;
+    filter: url(#name-inset);
   }
 </style>
