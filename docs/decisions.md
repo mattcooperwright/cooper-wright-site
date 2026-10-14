@@ -91,3 +91,6 @@ Manifest titles and visible wordmarks are kept exactly as the author wrote them.
 
 ## 2026-10-12: Home page name outlined on three lines, menu pinned to the bottom
 Merged with the second-pass home page above. The name keeps that pass's display font and has no panel, but it now runs one word per line at -0.075em tracking and 0.85 leading, drawn as a white outline with no fill. A drop shadow keeps it legible over the glass backdrop, since a text-shadow would show through the transparent fill. Tile titles are 3em with leading-none and wrap long words. The footer nav is pinned to the bottom of the viewport on the home page only, through `Base.astro`'s `navFixed` prop; other pages keep it in the flow below their content.
+
+## 2026-10-14: Home page name filled with reeded glass
+The name is solid again and smaller (`clamp(2.75rem, 11vw, 9rem)`, down from `clamp(3rem, 17vw, 14rem)`). Its fill borrows from the fluted-glass backdrop: the letters read as the same glass turned 90 degrees, with fine horizontal ridges (a highlight, a clear band and a shadowed groove, sized in `em` so they scale with the type) over a milky version of the shader's iridescent palette that drifts slowly. It is pure CSS (`background-clip: text`), so it costs no dependency. The drift stops under `prefers-reduced-motion`, and browsers without `background-clip: text` get plain white letters.
