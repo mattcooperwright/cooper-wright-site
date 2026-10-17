@@ -17,15 +17,31 @@ const fonts = [
   ]),
 ];
 ---
-<Base title="Matt Cooper-Wright" fonts={fonts} fullBleed navFixed>
+<Base title="Matt Cooper-Wright" fonts={fonts} fullBleed>
   <FlutedGlassBackground />
-  <div class="mx-auto max-w-6xl px-4 pt-12 pb-64">
+  <div class="mx-auto max-w-6xl px-4 pt-12 pb-16">
     <!-- One word per line; the spans keep the accessible name "Matt Cooper-Wright". -->
     <h1
-      class="font-display mb-10 pb-[0.12em] text-[clamp(3rem,17vw,14rem)] leading-[0.85] font-bold tracking-[-0.075em] text-transparent [-webkit-text-stroke:2px_white] [filter:drop-shadow(0_2px_12px_rgba(0,0,0,0.45))]"
+      class="inset-name font-display mb-10 pb-[0.12em] text-[clamp(2.75rem,11vw,9rem)] leading-[0.85] font-bold tracking-[-0.075em]"
     >
       <span class="block">Matt</span><span class="block">Cooper-</span><span class="block">Wright</span>
     </h1>
+    <svg class="absolute h-0 w-0" aria-hidden="true" focusable="false">
+      <filter id="name-inset" x="-5%" y="-5%" width="110%" height="110%">
+        <feComponentTransfer in="SourceAlpha" result="inverse">
+          <feFuncA type="table" tableValues="1 0" />
+        </feComponentTransfer>
+        <feGaussianBlur in="inverse" stdDeviation="3" />
+        <feOffset dx="0" dy="2" result="offset" />
+        <feFlood flood-color="#000" flood-opacity="0.85" />
+        <feComposite in2="offset" operator="in" />
+        <feComposite in2="SourceAlpha" operator="in" result="shadow" />
+        <feMerge>
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="shadow" />
+        </feMerge>
+      </filter>
+    </svg>
     <ul class="grid grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-2 lg:grid-cols-3">
       {pages.map((page) => (
         <li><Tile page={page} /></li>
@@ -33,3 +49,11 @@ const fonts = [
     </ul>
   </div>
 </Base>
+
+<style>
+  /* Near-black name with a faint black inner shadow, from the inline SVG filter above. */
+  .inset-name {
+    color: #1a1a1a;
+    filter: url(#name-inset);
+  }
+</style>
