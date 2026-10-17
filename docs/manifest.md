@@ -18,7 +18,7 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `updated` | date | no | | Date of the last meaningful change. |
 | `tags` | array of strings | no | | Shown on md posts and as RSS categories. |
 | `menuOrder` | number | no | | Lower numbers come first within a menu group. Pages without one follow, by date. |
-| `navTheme` | `light`, `dark` or `auto` | no | `auto` | Colours of the header, or of the slim bar on html pages. `auto` follows the visitor's system setting. |
+| `navTheme` | `light`, `dark` or `auto` | no | `auto` | No longer used: the menu is near-black on every page (docs/decisions.md, 2026-10-17). Kept so existing manifests stay valid. |
 | `image` | path | no | | Share image, as a site-root path to a file in `public/`, such as `/images/hello.png`. Becomes an absolute `og:image`. |
 | `indexStyle` | object | no | | Colours and font of this page's home page tile. `background` and `color` are CSS colours (default white and `#171717`); the build warns, without failing, if their contrast is below 4.5:1. `fontFamily` is a font role name such as `serif` or `poster`; anything else uses the body role. |
 | `url` | http or https URL | external only | | Required when `type` is `external` and rejected for every other type. |

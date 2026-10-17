@@ -94,3 +94,10 @@ Merged with the second-pass home page above. The name keeps that pass's display 
 
 ## 2026-10-14: Home page name in near-black with an inner shadow
 The name is solid again and smaller (`clamp(2.75rem, 11vw, 9rem)`, down from `clamp(3rem, 17vw, 14rem)`). It is near-black (`#1a1a1a`) with a faint black inner shadow. CSS has no inset text shadow, so the shadow comes from a small inline SVG filter on the heading that blurs and offsets the inverse of the letter shapes and clips the result back inside them. The drop shadow from the outlined version is gone, since dark letters hold up over the backdrop on their own. A reeded-glass fill was tried first and rejected.
+
+## 2026-10-17: Menu becomes a near-black left sidebar in Roboto Mono
+The shared menu moved from the footer to a fixed left sidebar (`md:w-56`) on every page, near-black (`#111`) with light text, set in uppercase Roboto Mono. Below the `md` breakpoint it sits as a near-black bar at the top of the page instead. The home page's `navFixed` bottom pin is gone, since the sidebar is fixed everywhere.
+
+Roboto Mono was requested by name, so it was added as the `mono` font role from `@fontsource-variable/roboto-mono` 5.3.0 (OFL-1.1). `Base.astro` loads it on every page, and Tailwind's `--font-mono` now points at it, so code in Markdown posts uses it too.
+
+The menu is the same near-black on every page, so the manifest's `navTheme` no longer has any effect. The field stays in the schema so existing manifests remain valid. Sandboxed html pages draw their own menu in `HtmlShell.astro`; it has the same colours and layout but uses the system monospace stack, because that page's CSP has no `'self'` and cannot load the self-hosted font.

@@ -13,10 +13,13 @@ All fonts are self-hosted: most as pinned Fontsource npm packages, one (Overused
 | Rethink Sans | rounded | `@fontsource-variable/rethink-sans` | 5.3.0 | OFL-1.1 |
 | DM Sans | grotesque | `@fontsource-variable/dm-sans` | 5.3.0 | OFL-1.1 |
 | Onest | plain | `@fontsource-variable/onest` | 5.3.0 | OFL-1.1 |
+| Roboto Mono | mono | `@fontsource-variable/roboto-mono` | 5.3.0 | OFL-1.1 |
 
 All are variable fonts covering their full weight range, except Gasoek One, which ships a single weight (400). Body, serif, rounded and grotesque include italics; grotesque (DM Sans) also has optical sizing. The others are upright only, and `font-synthesis: none` stops the browser faking bold or italic.
 
 ## Using a role on a page
+
+`Base.astro` always loads `mono`, the menu's face, so `font-mono` is Roboto Mono on every page that uses that layout.
 
 1. List the roles in the page's manifest: `"fonts": ["serif", "poster"]`. Home and 404 have no manifest and pass `fonts={['body']}` to `Base.astro` instead.
 2. Style with the role token: the Tailwind utility `font-serif`, or `var(--font-serif)` in CSS or inline styles.

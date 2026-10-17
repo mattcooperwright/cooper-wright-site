@@ -12,6 +12,7 @@ export const FONT_ROLES = [
   'rounded',
   'grotesque',
   'plain',
+  'mono',
 ] as const;
 
 export type FontRole = (typeof FONT_ROLES)[number];
@@ -26,7 +27,7 @@ export interface FontFamily {
   stylesheets: string[];
   // Weights the family actually ships, as a CSS font-weight value.
   weights: string;
-  fallback: 'sans-serif' | 'serif';
+  fallback: 'sans-serif' | 'serif' | 'monospace';
 }
 
 // Vendored (non-Fontsource) font packages live under src/assets/fonts/<family>,
@@ -133,6 +134,17 @@ export const FONT_FAMILIES: FontFamily[] = [
     stylesheets: ['wght.css'],
     weights: '100 900',
     fallback: 'sans-serif',
+  },
+  {
+    // The site menu, on every page. Also the face behind Tailwind's font-mono.
+    role: 'mono',
+    family: 'Roboto Mono',
+    package: '@fontsource-variable/roboto-mono',
+    version: '5.3.0',
+    licence: 'OFL-1.1',
+    stylesheets: ['wght.css'],
+    weights: '100 700',
+    fallback: 'monospace',
   },
 ];
 

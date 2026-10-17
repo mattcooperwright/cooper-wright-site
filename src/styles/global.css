@@ -7,7 +7,7 @@
 /* static: always emitted, so pages can use var(--font-<role>) in inline styles too. */
 @theme static {
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-system-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-system-serif: ui-serif, Georgia, "Times New Roman", serif;
 
   --font-display: var(--webfont-display, var(--font-sans));
@@ -19,6 +19,7 @@
   --font-rounded: var(--webfont-rounded, var(--font-sans));
   --font-grotesque: var(--webfont-grotesque, var(--font-sans));
   --font-plain: var(--webfont-plain, var(--font-sans));
+  --font-mono: var(--webfont-mono, var(--font-system-mono));
 }
 
 @layer base {
