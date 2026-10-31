@@ -18,7 +18,8 @@ Matt Cooper-Wright's personal site. Astro 7 with React, MDX and Tailwind 4, buil
 - A react page with `hydrate: true` also needs a route shim, `src/pages/<slug>.astro` (see docs/manifest.md)
 - `src/lib/pages.ts` has status filtering, payload checks and menu grouping
 - `tests/` holds the Vitest tests
-- `src/layouts/Base.astro` is the shared layout and generated menu
+- `src/layouts/Base.astro` is the shared layout
+- `src/components/SiteMenu.astro` is the site menu (rail plus hover index), used by Base and HtmlShell
 - `src/pages/` has the routes: `index`, `[slug]`, `[sandboxed]` (html), `[section]`, `rss.xml`, `sitemap.xml`, `404`
 - `docs/decisions.md` is the decision log
 - `docs/fonts.md` lists the self-hosted fonts and how pages load them by role
