@@ -1,9 +1,10 @@
 ---
 // Second backdrop layer, sitting above FlutedGlassBackground and below the page content.
-// A near-opaque white veil with sparse pinholes cut through it, so the glass shows only in
-// small flecks, like a night sky in negative. The flecks are short angled dashes of varying
-// size, thicker toward the bottom of the viewport, and drift slowly upward.
-// Canvas 2D, no dependency. Freezes on one frame when the visitor prefers reduced motion.
+// A fully opaque white veil with pinholes cut through it, so the glass shows only inside the
+// flecks, like a night sky in negative. The flecks are angled dashes that drift slowly upward
+// and swell in three ways: a gentle pulse rolling across the screen, growth around the cursor,
+// and every 20 to 30 seconds a large swell that sweeps in from the left and ebbs away.
+// Canvas 2D, no dependency. Freezes on one still frame when the visitor prefers reduced motion.
 ---
 <canvas id="pinhole-veil" class="pointer-events-none fixed inset-0 -z-[5] h-full w-full" aria-hidden="true"></canvas>
 <script>
@@ -14,12 +15,24 @@
     const canvas = canvasEl;
     const g = ctx;
 
-    // How solid the white is. Below 1 lets a very faint wash of colour through everywhere.
-    const VEIL_ALPHA = 0.97;
     // One fleck per this many CSS px squared, before the vertical density gradient.
-    const AREA_PER_FLECK = 5200;
+    const AREA_PER_FLECK = 9000;
     // Upward drift, in CSS px per second.
     const DRIFT = 5;
+    // Gentle pulse: +/- this fraction of size, rolling across the screen.
+    const PULSE_AMOUNT = 0.35;
+    // Cursor: radius in CSS px, and extra size at the cursor's centre.
+    const CURSOR_RADIUS = 230;
+    const CURSOR_BOOST = 3.8;
+    // Big swell: seconds until the first, then a random gap in this range; peak extra size.
+    const FIRST_SWELL_AT = 9;
+    const SWELL_GAP: [number, number] = [20, 30];
+    const SWELL_PEAK = 5.5;
+    const SWELL_RISE = 3.5;
+    const SWELL_FALL = 7;
+    // The swell reaches the right edge this many seconds after the left, so it rolls in.
+    const SWELL_SWEEP = 2.5;
+    const SWELL_LENGTH = SWELL_RISE + SWELL_FALL;
 
     type Fleck = { x: number; y: number; len: number; width: number; angle: number; speed: number; sway: number; phase: number };
 
@@ -29,19 +42,38 @@
     let h = 0;
     let dpr = 1;
 
+    // Cursor position in CSS px, eased so growth follows smoothly. Off-screen until it moves.
+    let mouseX = -9999;
+    let mouseY = -9999;
+    let smoothX = -9999;
+    let smoothY = -9999;
+
+    let swellStart = FIRST_SWELL_AT;
+
+    const smooth = (x: number) => {
+      const c = Math.min(Math.max(x, 0), 1);
+      return c * c * (3 - 2 * c);
+    };
+
+    function swellAt(t: number, x: number) {
+      const local = t - swellStart - (x / Math.max(w, 1)) * SWELL_SWEEP;
+      if (local <= 0 || local >= SWELL_LENGTH) return 0;
+      return local < SWELL_RISE ? smooth(local / SWELL_RISE) : 1 - smooth((local - SWELL_RISE) / SWELL_FALL);
+    }
+
     function seed() {
       const count = Math.round((w * h) / AREA_PER_FLECK);
       flecks = [];
       while (flecks.length < count) {
         const y = Math.random() * h;
-        // Denser toward the bottom: accept with probability rising from 0.25 at the top to 1 at the bottom.
-        if (Math.random() > 0.25 + 0.75 * (y / h)) continue;
-        const big = Math.random() < 0.06;
+        // Denser toward the bottom: accept with probability rising from 0.3 at the top to 1 at the bottom.
+        if (Math.random() > 0.3 + 0.7 * (y / h)) continue;
+        const big = Math.random() < 0.12;
         flecks.push({
           x: Math.random() * w,
           y,
-          len: big ? 3 + Math.random() * 4 : 1 + Math.random() * 2.5,
-          width: big ? 1.6 + Math.random() * 1.2 : 0.8 + Math.random() * 0.8,
+          len: big ? 9 + Math.random() * 8 : 4 + Math.random() * 5,
+          width: big ? 4.5 + Math.random() * 2.5 : 2.4 + Math.random() * 1.8,
           angle: Math.random() * Math.PI,
           speed: 0.5 + Math.random() * 1.1,
           sway: 4 + Math.random() * 10,
@@ -61,23 +93,45 @@
 
     function draw(now: number) {
       const t = reduceMotion ? 0 : now * 0.001;
+
+      if (!reduceMotion) {
+        if (t > swellStart + SWELL_LENGTH + SWELL_SWEEP) {
+          swellStart = t + SWELL_GAP[0] + Math.random() * (SWELL_GAP[1] - SWELL_GAP[0]);
+        }
+        smoothX += (mouseX - smoothX) * 0.15;
+        smoothY += (mouseY - smoothY) * 0.15;
+      }
+
       g.setTransform(1, 0, 0, 1, 0, 0);
       g.globalCompositeOperation = 'source-over';
-      g.clearRect(0, 0, canvas.width, canvas.height);
-      g.fillStyle = `rgba(255,255,255,${VEIL_ALPHA})`;
+      g.fillStyle = '#fff';
       g.fillRect(0, 0, canvas.width, canvas.height);
 
       g.setTransform(dpr, 0, 0, dpr, 0, 0);
       g.globalCompositeOperation = 'destination-out';
       g.lineCap = 'round';
       g.strokeStyle = '#000';
+      const wrap = h + 60;
       for (const f of flecks) {
-        // Rises and wraps; the wrap margin keeps flecks from popping at the edges.
-        const y = (((f.y - t * DRIFT * f.speed) % (h + 20)) + (h + 20)) % (h + 20) - 10;
+        // Rises and wraps; the margin keeps flecks from popping at the edges, even when swollen.
+        const y = (((f.y - t * DRIFT * f.speed) % wrap) + wrap) % wrap - 30;
         const x = f.x + Math.sin(t * 0.25 + f.phase) * f.sway;
-        const dx = Math.cos(f.angle) * f.len * 0.5;
-        const dy = Math.sin(f.angle) * f.len * 0.5;
-        g.lineWidth = f.width;
+
+        let scale = 1;
+        if (!reduceMotion) {
+          scale += PULSE_AMOUNT * Math.sin(t * 1.1 + x * 0.004 + y * 0.003);
+          scale += SWELL_PEAK * swellAt(t, x);
+          const d = Math.hypot(x - smoothX, y - smoothY);
+          if (d < CURSOR_RADIUS) {
+            const k = 1 - d / CURSOR_RADIUS;
+            scale += CURSOR_BOOST * k * k;
+          }
+        }
+
+        const half = (f.len * scale) / 2;
+        const dx = Math.cos(f.angle) * half;
+        const dy = Math.sin(f.angle) * half;
+        g.lineWidth = f.width * scale;
         g.beginPath();
         g.moveTo(x - dx, y - dy);
         g.lineTo(x + dx, y + dy);
@@ -92,6 +146,22 @@
       resize();
       if (reduceMotion) draw(0);
     });
+    if (!reduceMotion) {
+      window.addEventListener('pointermove', (e) => {
+        if (smoothX < -5000) {
+          smoothX = e.clientX;
+          smoothY = e.clientY;
+        }
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+      document.documentElement.addEventListener('pointerleave', () => {
+        mouseX = -9999;
+        mouseY = -9999;
+        smoothX = -9999;
+        smoothY = -9999;
+      });
+    }
     requestAnimationFrame(draw);
   }
 </script>
