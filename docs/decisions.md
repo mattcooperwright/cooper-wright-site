@@ -109,6 +109,9 @@ The tile section tag label is near-black (`#1a1a1a`, matching the home page name
 ## 2026-10-31: Pinhole veil made opaque, larger and responsive
 The veil is now fully opaque white (it was 97%), because the faint wash let the glass's grey vertical ridges ghost through everywhere. The glass now shows only inside the flecks. Flecks are roughly twice the size and a bit fewer. Their size now changes three ways: a gentle pulse (+/-35%) rolling diagonally across the screen, growth within 230px of the cursor (up to 4.8x at the centre), and a large swell (up to 6.5x) that starts 9 seconds after load and then recurs every 20 to 30 seconds, sweeping in from the left over about 2.5 seconds and ebbing over about 7. Under `prefers-reduced-motion` none of it runs and a single still frame is drawn. The cursor effect uses `pointermove`, so it also follows a finger on touch screens while dragging.
 
+## 2026-10-31: Glass ridges softened
+With the pinhole veil opaque, the fluted glass shows only inside the flecks, and in the large ones its vertical ridges read as grey stripes. The shader's ridge contrast is now faint: refraction 0.035 to 0.012, ridge shading 0.42..1.05 to 0.86..1.02, groove seam 0.65 to 0.94, specular glint 0.35 to 0.05. A hint of the ridges remains so the layer still reads as glass. The effect on the glass is only visible through the flecks, so no other part of the page changes.
+
 ## 2026-10-31: Menu becomes a slim rail with a hover index
 The left sidebar listed every page, which would keep growing. It is now a slim rail (`9rem` on desktop, a sticky top bar on mobile) showing only Home and the top-level sections. The full list moved into an index panel, laid out like a site map: one column per section with a page count, each page's title large in the mono face and its description in two clamped lines below.
 
