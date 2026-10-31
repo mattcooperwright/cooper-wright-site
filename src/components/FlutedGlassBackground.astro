@@ -81,7 +81,7 @@
       float ridgePhase = localX * PI;
       float normalX = sin(ridgePhase);
 
-      const float REFRACTION_STRENGTH = 0.035;
+      const float REFRACTION_STRENGTH = 0.012;
       vec2 refractedUV = uv + vec2(normalX * REFRACTION_STRENGTH, 0.0);
 
       vec3 color = colourAt(refractedUV, t);
@@ -94,10 +94,12 @@
       float highlightCore = pow(max(cos(ridgePhase), 0.0), 10.0);
       float groove = smoothstep(0.0, 0.08, 0.5 - abs(localX));
 
-      float shade = mix(0.42, 1.05, highlightWide);
-      shade *= mix(0.65, 1.0, groove);
+      // Kept faint: the pinhole veil shows only small windows of this layer, and strong
+      // ridge contrast read as grey stripes inside the larger ones.
+      float shade = mix(0.86, 1.02, highlightWide);
+      shade *= mix(0.94, 1.0, groove);
       color *= shade;
-      color += highlightCore * 0.35;
+      color += highlightCore * 0.05;
 
       gl_FragColor = vec4(clamp(color, 0.0, 1.0), 1.0);
     }
