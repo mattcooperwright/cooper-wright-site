@@ -1,0 +1,97 @@
+---
+// Second backdrop layer, sitting above FlutedGlassBackground and below the page content.
+// A near-opaque white veil with sparse pinholes cut through it, so the glass shows only in
+// small flecks, like a night sky in negative. The flecks are short angled dashes of varying
+// size, thicker toward the bottom of the viewport, and drift slowly upward.
+// Canvas 2D, no dependency. Freezes on one frame when the visitor prefers reduced motion.
+---
+<canvas id="pinhole-veil" class="pointer-events-none fixed inset-0 -z-[5] h-full w-full" aria-hidden="true"></canvas>
+<script>
+  const canvasEl = document.getElementById('pinhole-veil');
+  const ctx = canvasEl instanceof HTMLCanvasElement ? canvasEl.getContext('2d') : null;
+
+  if (canvasEl instanceof HTMLCanvasElement && ctx) {
+    const canvas = canvasEl;
+    const g = ctx;
+
+    // How solid the white is. Below 1 lets a very faint wash of colour through everywhere.
+    const VEIL_ALPHA = 0.97;
+    // One fleck per this many CSS px squared, before the vertical density gradient.
+    const AREA_PER_FLECK = 5200;
+    // Upward drift, in CSS px per second.
+    const DRIFT = 5;
+
+    type Fleck = { x: number; y: number; len: number; width: number; angle: number; speed: number; sway: number; phase: number };
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let flecks: Fleck[] = [];
+    let w = 0;
+    let h = 0;
+    let dpr = 1;
+
+    function seed() {
+      const count = Math.round((w * h) / AREA_PER_FLECK);
+      flecks = [];
+      while (flecks.length < count) {
+        const y = Math.random() * h;
+        // Denser toward the bottom: accept with probability rising from 0.25 at the top to 1 at the bottom.
+        if (Math.random() > 0.25 + 0.75 * (y / h)) continue;
+        const big = Math.random() < 0.06;
+        flecks.push({
+          x: Math.random() * w,
+          y,
+          len: big ? 3 + Math.random() * 4 : 1 + Math.random() * 2.5,
+          width: big ? 1.6 + Math.random() * 1.2 : 0.8 + Math.random() * 0.8,
+          angle: Math.random() * Math.PI,
+          speed: 0.5 + Math.random() * 1.1,
+          sway: 4 + Math.random() * 10,
+          phase: Math.random() * Math.PI * 2,
+        });
+      }
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      seed();
+    }
+
+    function draw(now: number) {
+      const t = reduceMotion ? 0 : now * 0.001;
+      g.setTransform(1, 0, 0, 1, 0, 0);
+      g.globalCompositeOperation = 'source-over';
+      g.clearRect(0, 0, canvas.width, canvas.height);
+      g.fillStyle = `rgba(255,255,255,${VEIL_ALPHA})`;
+      g.fillRect(0, 0, canvas.width, canvas.height);
+
+      g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      g.globalCompositeOperation = 'destination-out';
+      g.lineCap = 'round';
+      g.strokeStyle = '#000';
+      for (const f of flecks) {
+        // Rises and wraps; the wrap margin keeps flecks from popping at the edges.
+        const y = (((f.y - t * DRIFT * f.speed) % (h + 20)) + (h + 20)) % (h + 20) - 10;
+        const x = f.x + Math.sin(t * 0.25 + f.phase) * f.sway;
+        const dx = Math.cos(f.angle) * f.len * 0.5;
+        const dy = Math.sin(f.angle) * f.len * 0.5;
+        g.lineWidth = f.width;
+        g.beginPath();
+        g.moveTo(x - dx, y - dy);
+        g.lineTo(x + dx, y + dy);
+        g.stroke();
+      }
+
+      if (!reduceMotion) requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', () => {
+      resize();
+      if (reduceMotion) draw(0);
+    });
+    requestAnimationFrame(draw);
+  }
+</script>
