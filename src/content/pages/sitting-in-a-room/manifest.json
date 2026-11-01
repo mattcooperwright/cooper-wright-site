@@ -6,6 +6,7 @@
   "type": "react",
   "status": "published",
   "section": "Experiments",
+  "image": "/images/sitting-in-a-room.webp",
   "navTheme": "light",
   "fonts": ["grotesque"],
   "hydrate": true,

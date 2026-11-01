@@ -16,6 +16,9 @@ const background = indexStyle?.background ?? TILE_DEFAULTS.background;
 const color = indexStyle?.color ?? TILE_DEFAULTS.color;
 const fontFamily = `var(--font-${tileFontRole(indexStyle?.fontFamily)})`;
 const hasTag = Boolean(section && (SECTIONS as readonly string[]).includes(section));
+// A tile with an image is filled by it. The title sits on a dark gradient at the foot and the
+// description is left out.
+const hasImage = Boolean(image);
 
 // The section tag is a fixed-size chip (not sized to its text) so this same box, in
 // pixels, can also cut the exact hole for it out of the background fill below.
@@ -29,7 +32,7 @@ const holeShape = `url("data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' width='${TAG_BOX.width}' height='${TAG_BOX.height}'><rect width='${TAG_BOX.width}' height='${TAG_BOX.height}' rx='${TAG_BOX.radius}' ry='${TAG_BOX.radius}' fill='#000'/></svg>`,
 )}")`;
 
-const backgroundStyle = hasTag
+const backgroundStyle = hasTag && !hasImage
   ? {
       background,
       maskImage: `linear-gradient(#000, #000), ${holeShape}`,
@@ -53,17 +56,28 @@ const backgroundStyle = hasTag
       fixed page background shows through — a real window, not a translucent tint. */}
   <div class="absolute inset-0" style={backgroundStyle} />
   {image && (
-    <img src={image} alt={title} loading="lazy" decoding="async" class="relative aspect-[16/9] w-full object-cover" />
+    <>
+      {/* Decorative: the title below already names the page, so a screen reader needn't hear it twice. */}
+      <img src={image} alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />
+      <div
+        class="absolute inset-0"
+        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0) 68%)' }}
+      />
+    </>
   )}
   {hasTag && (
     <p
-      class="absolute flex items-center justify-center font-body text-xs uppercase tracking-wide text-[#1a1a1a]"
+      class:list={[
+        'absolute flex items-center justify-center font-body text-xs uppercase tracking-wide text-[#1a1a1a]',
+        // Over a picture there is no hole to show through, so the chip is a solid white label.
+        hasImage && 'rounded-[3px] bg-white',
+      ]}
       style={{ left: `${TAG_BOX.left}px`, top: `${TAG_BOX.top}px`, width: `${TAG_BOX.width}px`, height: `${TAG_BOX.height}px` }}
     >
       {section}
     </p>
   )}
-  <div class="relative flex flex-1 flex-col gap-2 p-5 pt-14">
+  <div class:list={['relative flex flex-1 flex-col gap-2 p-5', hasImage ? 'justify-end' : 'pt-14']}>
     <h2 class="text-[3em] font-semibold leading-none break-words">
       <a
         href={pageHref(page)}
@@ -74,6 +88,6 @@ const backgroundStyle = hasTag
         {external && <span class="sr-only"> (opens in a new tab)</span>}
       </a>
     </h2>
-    <p class="line-clamp-5 opacity-80">{description}</p>
+    {!hasImage && <p class="line-clamp-5 opacity-80">{description}</p>}
   </div>
 </article>
