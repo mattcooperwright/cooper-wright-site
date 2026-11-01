@@ -140,3 +140,11 @@ The images are square WebP files at 1000px (about 30 to 40 KB each), in `public/
 
 ## 2026-11-01: Tile rules written into the manifest spec
 `docs/manifest.md` now has a Home page tile section, so a future page, including one submitted by a chat or machine sender, gets the right tile without guessing. It sets out the two tile forms (text and picture), which sections get a picture (Experiments, yes; Writing, no; Projects, undecided so text), the image spec (a real grab, square 1000x1000 WebP, `public/images/<slug>.webp`) and how to crop for the title fade and the section tag. The `image` and `indexStyle` field rows and the html example were corrected to match, and `CLAUDE.md` points to it. Nothing is enforced by the build beyond the existing check that the image file exists, so the rules rely on whoever adds the page.
+
+## 2026-11-01: pianohouse added, and sandboxed html pages may start blob workers
+pianohouse is an html page in Experiments. It renders its piano, EP, organ and rave stab samples in a Web Worker built from a `blob:` URL. The shell CSP is `default-src 'none'` with no `worker-src`, so workers fall back to `script-src`, which has no `blob:`. The worker was refused and the page dropped to its plain oscillator fallback, with all five instruments sounding thinner. The shell CSP now adds `worker-src blob:`. A worker stays inside the sandboxed iframe's opaque origin, and `connect-src 'none'` still stops it reaching the network, so the added exposure is small. It applies to every html page, not only this one. The manifest title is `pianohouse` in lowercase, as the author wrote it.
+
+The pianohouse tile uses a 1000x1000 WebP grab of the page while playing (RIFF part, scope live), cropped from the top of the instrument so the page's own small headline is left out. The section chip covers the tabs and the key readout. The page is dense, so no crop leaves that corner fully empty. It will go stale if the page changes.
+
+## 2026-11-01: Claude may merge pull requests
+The rule "Never push to or merge into main" is removed from `CLAUDE.md` at the owner's request. Work still happens on a branch with a pull request. Merging that pull request is now allowed when the owner asks for it.

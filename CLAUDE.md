@@ -30,7 +30,7 @@ To add a page, create a folder under `src/content/pages/` and run `npm run build
 A bad manifest or a missing payload fails the build.
 
 ## Rules
-- Work on a branch and open a pull request. Never push to or merge into main.
+- Work on a branch and open a pull request.
 - Pin every dependency to an exact version, including GitHub Actions (by commit SHA).
 - Never commit secrets, tokens or `.env` files. This repo is public.
 - Ask before adding any external script or font. Fonts are self-hosted only; never link a font host.

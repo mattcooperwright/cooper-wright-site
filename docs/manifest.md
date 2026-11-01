@@ -56,6 +56,7 @@ mdx and react execute code at build time, so they only arrive through a reviewed
 - styles inline and from `https://fonts.googleapis.com`
 - fonts from `https://fonts.gstatic.com`
 - images from `data:` and `blob:` only
+- Web Workers from `blob:` URLs only (`worker-src blob:`), for pages that render audio or other heavy work off the main thread
 - no network connections (`connect-src 'none'`), no forms, no `<base>`
 
 Anything else, including the site's own files and self-hosted fonts, is blocked. Pin library versions in script URLs. `/gsap-sandbox/` is an unlisted fixture that proves animation libraries work.

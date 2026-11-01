@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "title": "pianohouse",
+  "description": "An endless piano house generator. Shape the riff, tune it with the knobs, and let the arrangement run. All sound is synthesised live in the browser.",
+  "date": "2026-10-31",
+  "type": "html",
+  "status": "published",
+  "section": "Experiments",
+  "image": "/images/pianohouse.webp",
+  "navTheme": "dark",
+  "indexStyle": {
+    "background": "#17191c",
+    "color": "#f3df4b"
+  }
+}
