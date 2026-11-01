@@ -6,6 +6,7 @@
   "type": "html",
   "status": "published",
   "section": "Experiments",
+  "image": "/images/pianohouse.webp",
   "navTheme": "dark",
   "indexStyle": {
     "background": "#17191c",
