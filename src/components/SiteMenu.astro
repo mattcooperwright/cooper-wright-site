@@ -1,15 +1,15 @@
 ---
 // The site menu, shared by Base.astro and HtmlShell.astro.
 //
-// Collapsed, it is a slim near-black rail (left on desktop, a top bar on mobile) with Home
-// and the top-level sections only. Expanded, an index panel lists every page by section,
-// like a site map. It never covers the whole screen: a strip of the site stays visible
-// under a light scrim.
-//   Desktop with a mouse: hovering the rail opens the index; moving off it closes it.
-//   Touch or narrow screens: tapping a section opens the index at that section; tapping
-//   the visible site (the scrim) or the same section again closes it.
-//   Keyboard: tabbing into the menu opens it; Escape or tabbing out closes it.
-// Without JavaScript the rail still works: Home and each section link to their pages.
+// A slim near-black rail (left on desktop, a bar across the top on mobile) with Home and one
+// label per section. Clicking or tapping a section opens a small menu of just that section's
+// page titles. The open label turns into a white chip so it is clear which one the list belongs to.
+//   Desktop: the list opens beside the rail, its first title level with the chosen label.
+//   Mobile: the list drops from the bar at full width, one 44px row per title.
+//   Click the label again, click anywhere outside, or press Escape to close. With the menu open,
+//   hovering another label on desktop switches to it.
+//   Keyboard: labels are buttons (aria-expanded); Tab moves from a label into its list.
+// Without JavaScript each section label is a plain link to its section page.
 //
 // Styles and script are inline and use no Tailwind classes, because HtmlShell's CSP has no
 // 'self' and cannot load the site's stylesheet or bundled scripts. The font is the mono role,
@@ -26,252 +26,216 @@ interface Props {
 const { groups, current } = Astro.props;
 
 const isSection = (label: string): label is Section => (SECTIONS as readonly string[]).includes(label);
-const groupId = (label: string) => `site-index-${label.toLowerCase()}`;
-const groupHref = (label: string) => (isSection(label) ? `/${sectionSlug(label)}/` : `#${groupId(label)}`);
+const slug = (label: string) => label.toLowerCase();
 const sectionPath = (label: string) => (isSection(label) ? `/${sectionSlug(label)}` : null);
 const inGroup = (group: MenuGroup) =>
   current === sectionPath(group.label) || group.pages.some((p) => current === `/${p.id}`);
-const pad = (n: number) => String(n).padStart(2, '0');
-const total = groups.reduce((n, g) => n + g.pages.length, 0);
 ---
-<div class="sm-scrim" data-sm-scrim aria-hidden="true"></div>
+<div class="sm-layer" data-sm-layer aria-hidden="true"></div>
 <nav class="sm" aria-label="Main" data-sm>
   <ul class="sm-rail">
-    <li><a class="sm-home" href="/" aria-current={current === '' ? 'page' : undefined}>Home</a></li>
+    <li><a class="sm-link" href="/" aria-current={current === '' ? 'page' : undefined}>Home</a></li>
     {groups.map((group) => (
-      <li>
-        <a
-          class="sm-section"
-          href={groupHref(group.label)}
-          data-sm-section={groupId(group.label)}
-          aria-controls="site-index"
-          aria-expanded="false"
-          aria-current={current === sectionPath(group.label) ? 'page' : inGroup(group) ? 'true' : undefined}
-        >
-          {group.label}
-        </a>
+      <li data-sm-item>
+        {isSection(group.label) ? (
+          <a
+            class="sm-link sm-trigger"
+            href={`/${sectionSlug(group.label)}/`}
+            data-sm-trigger
+            aria-controls={`sm-menu-${slug(group.label)}`}
+            aria-expanded="false"
+            data-current={inGroup(group) ? '' : undefined}
+          >
+            {group.label}
+          </a>
+        ) : (
+          // A group with no section page has nothing to link to without JavaScript, so it is a button.
+          <button
+            type="button"
+            class="sm-link sm-trigger"
+            data-sm-trigger
+            aria-controls={`sm-menu-${slug(group.label)}`}
+            aria-expanded="false"
+            data-current={inGroup(group) ? '' : undefined}
+          >
+            {group.label}
+          </button>
+        )}
+        <ul class="sm-panel" id={`sm-menu-${slug(group.label)}`} data-sm-panel aria-label={group.label}>
+          {group.pages.map((item) => (
+            <li>
+              <a
+                class="sm-page"
+                href={pageHref(item)}
+                aria-current={current === `/${item.id}` ? 'page' : undefined}
+                {...(isExternal(item) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                {item.data.title}
+                {isExternal(item) && (
+                  <>
+                    {' '}<span aria-hidden="true">↗</span><span class="sm-sr">(opens in a new tab)</span>
+                  </>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
       </li>
     ))}
   </ul>
-  <div id="site-index" class="sm-panel" data-sm-panel>
-    <p class="sm-kicker">Index <span>{pad(total)}</span></p>
-    <div class="sm-index">
-      {groups.map((group) => (
-        <section class="sm-group" id={groupId(group.label)} data-sm-group aria-labelledby={`${groupId(group.label)}-label`}>
-          <h2 class="sm-group-label" id={`${groupId(group.label)}-label`}>
-            {isSection(group.label) ? <a href={groupHref(group.label)}>{group.label}</a> : group.label}
-            <span>{pad(group.pages.length)}</span>
-          </h2>
-          <ul>
-            {group.pages.map((item) => (
-              <li>
-                <a
-                  class="sm-page"
-                  href={pageHref(item)}
-                  aria-current={current === `/${item.id}` ? 'page' : undefined}
-                  {...(isExternal(item) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  <span class="sm-title">
-                    {item.data.title}
-                    {isExternal(item) && (
-                      <>
-                        {' '}<span aria-hidden="true">↗</span><span class="sm-sr">(opens in a new tab)</span>
-                      </>
-                    )}
-                  </span>
-                  {item.data.description && <span class="sm-desc">{item.data.description}</span>}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
-    </div>
-  </div>
 </nav>
 
 <style is:inline>
   :root { --sm-rail: 9rem; }
   .sm, .sm * { box-sizing: border-box; }
   /* One size, all caps, regular weight. Hierarchy comes from colour alone: page titles and
-     active items white, section labels mid grey, descriptions and counts darker grey.
-     Each grey keeps at least 4.5:1 contrast on the background. */
+     active items white, rail labels mid grey. Each grey keeps at least 4.5:1 contrast. */
   .sm {
-    --sm-bg: #111; --sm-fg: #f5f5f5; --sm-mid: #a6a6a6; --sm-dim: #808080; --sm-line: #2a2a2a;
+    --sm-bg: #111; --sm-fg: #f5f5f5; --sm-mid: #a6a6a6; --sm-line: #2a2a2a;
     position: sticky; top: 0; z-index: 1000;
     background: var(--sm-bg); color: var(--sm-fg);
     font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
     font-size: 12px; font-weight: 400; line-height: 1.5; letter-spacing: 0.05em; text-transform: uppercase;
   }
-  .sm a { color: inherit; text-decoration: none; }
-  .sm a:focus-visible { outline: 2px solid var(--sm-fg); outline-offset: 3px; }
   .sm :where(ul) { list-style: none; margin: 0; padding: 0; }
+  .sm a { text-decoration: none; }
+  .sm a:focus-visible, .sm button:focus-visible { outline: 2px solid var(--sm-fg); outline-offset: 3px; }
   .sm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   .sm-rail { display: flex; flex-wrap: wrap; gap: 6px 24px; padding: 14px 16px; }
-  .sm .sm-rail a { color: var(--sm-mid); text-underline-offset: 3px; }
-  .sm .sm-rail a:hover, .sm .sm-rail a[data-active], .sm .sm-rail a[aria-current] { color: var(--sm-fg); }
-  .sm .sm-rail a[aria-current] { text-decoration: underline; }
+  /* Rail labels carry 2px 8px padding with matching negative margin, so the open state's chip
+     can fill without anything shifting. */
+  .sm .sm-link {
+    display: inline-block; margin: -2px -8px; padding: 2px 8px; border: 0; border-radius: 2px;
+    background: none; font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left;
+    color: var(--sm-mid); cursor: pointer; text-underline-offset: 3px;
+  }
+  .sm .sm-link:hover { color: var(--sm-fg); }
+  .sm .sm-link[aria-current], .sm .sm-trigger[data-current] { color: var(--sm-fg); text-decoration: underline; }
+  /* Open: an inverted chip, the same white label as the tags on the home page tiles. */
+  .sm .sm-trigger[aria-expanded="true"] { background: var(--sm-fg); color: var(--sm-bg); }
 
+  /* A section's menu: just its page titles, as small as its list needs. */
   .sm-panel {
-    position: absolute; top: 100%; left: 0; right: 0; height: 78dvh;
-    overflow-y: auto; overscroll-behavior: contain;
-    background: var(--sm-bg); border-top: 1px solid var(--sm-line);
-    padding: 24px 16px 48px;
-    visibility: hidden; opacity: 0; transform: translateY(-8px);
-    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+    position: absolute; top: 100%; left: 0; right: 0; max-height: 70dvh; overflow-y: auto; overscroll-behavior: contain;
+    background: var(--sm-bg); border-top: 1px solid var(--sm-line); border-bottom: 1px solid var(--sm-line);
+    visibility: hidden; opacity: 0; transform: translateY(-6px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s linear 0.15s;
   }
-  .sm[data-open] .sm-panel {
-    visibility: visible; opacity: 1; transform: none;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-  }
-  .sm-kicker { display: flex; gap: 12px; margin: 0 0 32px; color: var(--sm-dim); }
-  .sm-index { display: grid; gap: 40px 48px; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); max-width: 80rem; }
-  .sm-group-label {
-    display: flex; justify-content: space-between; gap: 12px;
-    margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--sm-line);
-    font: inherit; color: var(--sm-mid);
-    transition: color 0.18s ease, border-color 0.18s ease;
-  }
-  .sm-group-label span { color: var(--sm-dim); }
-  .sm-group-label a:hover { color: var(--sm-fg); text-decoration: underline; text-underline-offset: 3px; }
-  .sm-group[data-active] .sm-group-label,
-  .sm-group[data-active] .sm-group-label span { color: var(--sm-fg); border-color: var(--sm-fg); }
-  .sm-group ul { display: grid; gap: 14px; }
-  .sm-page { display: block; }
-  .sm-title { display: block; color: var(--sm-fg); text-underline-offset: 3px; }
-  .sm-page:hover .sm-title, .sm-page[aria-current] .sm-title { text-decoration: underline; }
-  .sm-desc {
-    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
-    max-width: 52ch; color: var(--sm-dim);
-  }
+  .sm-panel[data-open] { visibility: visible; opacity: 1; transform: none; transition: opacity 0.15s ease, transform 0.15s ease; }
+  .sm .sm-page { display: flex; align-items: center; min-height: 44px; padding: 8px 16px; color: var(--sm-fg); text-underline-offset: 3px; }
+  .sm-panel li + li .sm-page { border-top: 1px solid var(--sm-line); }
+  .sm .sm-page:hover, .sm .sm-page[aria-current] { text-decoration: underline; }
 
-  .sm-scrim {
-    position: fixed; inset: 0; z-index: 999; background: rgba(17, 17, 17, 0.22);
-    visibility: hidden; opacity: 0;
-    transition: opacity 0.18s ease, visibility 0s linear 0.18s;
-  }
-  .sm-scrim[data-open] { visibility: visible; opacity: 1; transition: opacity 0.18s ease; }
+  /* Catches the click that closes the menu. Transparent, and above sandboxed html pages' iframes,
+     which would otherwise swallow it. */
+  .sm-layer { position: fixed; inset: 0; z-index: 999; visibility: hidden; }
+  .sm-layer[data-open] { visibility: visible; }
 
   @media (min-width: 768px) {
     body { padding-left: var(--sm-rail); }
     .sm { position: fixed; top: 0; bottom: 0; left: 0; width: var(--sm-rail); }
     .sm-rail { flex-direction: column; flex-wrap: nowrap; gap: 10px; padding: 32px 24px; }
     .sm-rail li:first-child { margin-bottom: 14px; }
+    /* Opens beside the rail. The script sets top so the first title sits level with the label. */
     .sm-panel {
-      top: 0; bottom: 0; left: 100%; right: auto; height: auto;
-      width: calc(100vw - var(--sm-rail) - max(12vw, 6rem));
-      padding: 32px 48px 64px; border-top: 0; border-left: 1px solid var(--sm-line);
-      transform: translateX(-12px);
+      top: 0; left: 100%; right: auto; min-width: 16rem; max-width: calc(100vw - var(--sm-rail) - 24px);
+      padding: 12px 20px; border: 1px solid var(--sm-line); border-left: 0;
+      transform: translateX(-6px);
     }
+    .sm .sm-page { min-height: 0; padding: 2px 0; }
+    .sm-panel li + li { margin-top: 8px; }
+    .sm-panel li + li .sm-page { border-top: 0; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .sm-panel, .sm[data-open] .sm-panel, .sm-scrim, .sm-scrim[data-open], .sm-group-label { transition: none; transform: none; }
+    .sm-panel, .sm-panel[data-open] { transition: none; transform: none; }
   }
 </style>
 
 <script is:inline>
   (() => {
     const nav = document.querySelector('[data-sm]');
-    const scrim = document.querySelector('[data-sm-scrim]');
-    const panel = nav && nav.querySelector('[data-sm-panel]');
-    if (!nav || !scrim || !panel) return;
+    const layer = document.querySelector('[data-sm-layer]');
+    if (!nav || !layer) return;
 
-    const sections = [...nav.querySelectorAll('[data-sm-section]')];
-    const groups = [...nav.querySelectorAll('[data-sm-group]')];
+    const items = [...nav.querySelectorAll('[data-sm-item]')].map((li) => ({
+      trigger: li.querySelector('[data-sm-trigger]'),
+      panel: li.querySelector('[data-sm-panel]'),
+    })).filter((i) => i.trigger && i.panel);
     const narrow = window.matchMedia('(max-width: 767.98px)');
-    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
-    // Narrow screens, and wide ones without a hovering pointer, open by tapping a section.
-    const tapMode = () => narrow.matches || !canHover.matches;
+    // Panel padding plus border above the first title, so it lines up with the rail label.
+    const TOP_OFFSET = 13;
 
-    let openTimer = 0;
-    let closeTimer = 0;
-    let active = null;
+    let openItem = null;
 
-    const isOpen = () => nav.hasAttribute('data-open');
-
-    function highlight(id) {
-      active = id;
-      for (const a of sections) a.toggleAttribute('data-active', isOpen() && a.dataset.smSection === id);
-      for (const g of groups) g.toggleAttribute('data-active', isOpen() && g.id === id);
+    // Labels act as buttons once the script is running. Without it they stay plain links.
+    for (const { trigger } of items) {
+      if (trigger.tagName === 'A') trigger.setAttribute('role', 'button');
     }
 
-    function open(id) {
-      clearTimeout(closeTimer);
-      nav.setAttribute('data-open', '');
-      scrim.setAttribute('data-open', '');
-      for (const a of sections) a.setAttribute('aria-expanded', 'true');
-      highlight(id);
-      if (id && narrow.matches) {
-        const g = document.getElementById(id);
-        if (g) panel.scrollTop = Math.max(0, g.offsetTop - 24);
+    function place({ trigger, panel }) {
+      if (narrow.matches) {
+        panel.style.top = '';
+        panel.style.maxHeight = '';
+        return;
       }
+      const top = Math.max(0, trigger.offsetTop - TOP_OFFSET);
+      panel.style.top = top + 'px';
+      panel.style.maxHeight = Math.max(160, window.innerHeight - top - 16) + 'px';
     }
 
     function close() {
-      clearTimeout(openTimer);
-      clearTimeout(closeTimer);
-      nav.removeAttribute('data-open');
-      scrim.removeAttribute('data-open');
-      for (const a of sections) a.setAttribute('aria-expanded', 'false');
-      highlight(null);
+      if (!openItem) return;
+      openItem.trigger.setAttribute('aria-expanded', 'false');
+      openItem.panel.removeAttribute('data-open');
+      layer.removeAttribute('data-open');
+      openItem = null;
     }
 
-    // Desktop hover: a short delay each way so passing the cursor over the rail doesn't flash it.
-    nav.addEventListener('pointerenter', (e) => {
-      if (e.pointerType !== 'mouse' || tapMode()) return;
-      clearTimeout(closeTimer);
-      if (!isOpen()) openTimer = setTimeout(() => open(active), 70);
-    });
-    nav.addEventListener('pointerleave', (e) => {
-      if (e.pointerType !== 'mouse' || tapMode()) return;
-      clearTimeout(openTimer);
-      closeTimer = setTimeout(close, 220);
-    });
-
-    for (const a of sections) {
-      const id = a.dataset.smSection;
-      // Hovering a section in the rail picks out its group in the index.
-      a.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'mouse' && !tapMode()) {
-          active = id;
-          if (isOpen()) highlight(id);
-        }
-      });
-      a.addEventListener('click', (e) => {
-        if (!tapMode()) return; // With a mouse the index is already open; the click goes to the section page.
-        e.preventDefault();
-        if (isOpen() && active === id) close();
-        else open(id);
-      });
-    }
-
-    scrim.addEventListener('click', close);
-
-    // Keyboard: tabbing in opens the index, tabbing out closes it.
-    nav.addEventListener('focusin', (e) => {
-      if (!e.target.matches(':focus-visible')) return;
-      const id = tapMode() ? null : e.target.dataset.smSection || active;
-      if (!isOpen()) open(id);
-      else if (!tapMode() && e.target.dataset.smSection) highlight(e.target.dataset.smSection);
-    });
-    nav.addEventListener('focusout', (e) => {
-      if (isOpen() && !nav.contains(e.relatedTarget) && e.relatedTarget) close();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key !== 'Escape' || !isOpen()) return;
-      const returnTo = panel.contains(document.activeElement)
-        ? sections.find((a) => a.dataset.smSection === active) || nav.querySelector('.sm-home')
-        : null;
+    function open(item) {
+      if (openItem === item) return;
       close();
-      if (returnTo) {
-        returnTo.focus({ preventScroll: true });
-        close(); // focusing the rail reopens it; Escape means closed.
-      }
+      place(item);
+      item.trigger.setAttribute('aria-expanded', 'true');
+      item.panel.setAttribute('data-open', '');
+      layer.setAttribute('data-open', '');
+      item.panel.scrollTop = 0;
+      openItem = item;
+    }
+
+    for (const item of items) {
+      item.trigger.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // let "open in new tab" through
+        e.preventDefault();
+        if (openItem === item) close();
+        else open(item);
+      });
+      // With the menu open on desktop, moving to another label switches to it.
+      item.trigger.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse' && openItem && openItem !== item && !narrow.matches) open(item);
+      });
+    }
+
+    layer.addEventListener('click', close);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape' || !openItem) return;
+      const { trigger, panel } = openItem;
+      const hadFocusInside = panel.contains(document.activeElement);
+      close();
+      if (hadFocusInside) trigger.focus({ preventScroll: true });
+    });
+
+    // Tabbing out of the open label and its list closes it.
+    nav.addEventListener('focusout', (e) => {
+      if (!openItem || !e.relatedTarget) return;
+      if (e.relatedTarget === openItem.trigger || openItem.panel.contains(e.relatedTarget)) return;
+      close();
     });
 
     narrow.addEventListener('change', close);
+    window.addEventListener('resize', () => { if (openItem) place(openItem); });
     window.addEventListener('pageshow', close);
   })();
 </script>
