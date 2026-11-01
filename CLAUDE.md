@@ -23,7 +23,8 @@ Matt Cooper-Wright's personal site. Astro 7 with React, MDX and Tailwind 4, buil
 - `src/pages/` has the routes: `index`, `[slug]`, `[sandboxed]` (html), `[section]`, `rss.xml`, `sitemap.xml`, `404`
 - `docs/decisions.md` is the decision log
 - `docs/fonts.md` lists the self-hosted fonts and how pages load them by role
-- `docs/manifest.md` documents every manifest field, with an example per type. Read it before editing a manifest.
+- `docs/manifest.md` documents every manifest field, with an example per type, and the rules for home page tiles. Read it before editing a manifest.
+- Experiments pages get a square WebP grab as their tile `image` (docs/manifest.md, Home page tile)
 
 To add a page, create a folder under `src/content/pages/` and run `npm run build`.
 A bad manifest or a missing payload fails the build.
