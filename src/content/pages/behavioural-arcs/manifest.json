@@ -6,6 +6,15 @@
   "type": "md",
   "status": "published",
   "section": "Writing",
-  "tags": ["research", "personas", "design"],
-  "source": "LinkedIn article, published 14 May 2026"
+  "tags": [
+    "research",
+    "personas",
+    "design"
+  ],
+  "source": "LinkedIn article, published 14 May 2026",
+  "indexStyle": {
+    "background": "#16111F",
+    "color": "#F4E9FF",
+    "fontFamily": "serif"
+  }
 }
