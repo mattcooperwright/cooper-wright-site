@@ -6,6 +6,15 @@
   "type": "md",
   "status": "published",
   "section": "Writing",
-  "tags": ["making", "workshops", "culture"],
-  "source": "LinkedIn article, published 22 Feb 2024"
+  "tags": [
+    "making",
+    "workshops",
+    "culture"
+  ],
+  "source": "LinkedIn article, published 22 Feb 2024",
+  "indexStyle": {
+    "background": "#F2A33A",
+    "color": "#111111",
+    "fontFamily": "serif"
+  }
 }
