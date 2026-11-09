@@ -37,7 +37,10 @@ cd apps/mesh-gradient-mcp
 npm ci
 ```
 
-Claude Code:
+Claude Code, inside this repository: the root `.mcp.json` already declares the server, so after `npm ci`
+above, open Claude Code at the repository root and approve it when asked. Check it with `/mcp`.
+
+Claude Code, from anywhere else:
 
 ```sh
 claude mcp add mesh-gradient -- node /absolute/path/to/apps/mesh-gradient-mcp/src/server.ts
@@ -56,6 +59,13 @@ Claude Desktop, in `claude_desktop_config.json`:
   }
 }
 ```
+
+## Using it
+
+Ask for a gradient in plain words, for example "make a 16:9 gradient from deep navy and warm orange,
+fairly soft" or "give me the same colours with a different seed". Claude calls
+`generate_mesh_gradient` (shown as `mesh-gradient` in the tool list), shows the preview, and tells you
+where the PNG was saved. Claude.ai in the browser and the phone apps cannot run a local stdio server.
 
 ## Development
 
