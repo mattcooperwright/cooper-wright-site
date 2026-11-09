@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mesh-gradient": {
+      "command": "node",
+      "args": ["apps/mesh-gradient-mcp/src/server.ts"]
+    }
+  }
+}

@@ -19,6 +19,7 @@ Matt Cooper-Wright's personal site. Astro 7 with React, MDX and Tailwind 4, buil
 - `src/lib/pages.ts` has status filtering, payload checks and menu grouping
 - `tests/` holds the Vitest tests
 - `apps/mesh-gradient-studio/` is a separate Vinext app, built to static files by `npm run studio:build` into `public/mesh-gradient-studio/` (committed). Rebuild after editing it. See docs/decisions.md, 2026-11-09.
+- `apps/mesh-gradient-mcp/` is a local stdio MCP server that renders gradients with the studio's engine (`apps/mesh-gradient-studio/app/mesh.ts`). It has its own install and tests (README inside).
 - `src/layouts/Base.astro` is the shared layout
 - `src/components/SiteMenu.astro` is the site menu (rail plus section menus), used by Base and HtmlShell
 - `src/pages/` has the routes: `index`, `[slug]`, `[sandboxed]` (html), `[section]`, `rss.xml`, `sitemap.xml`, `404`
