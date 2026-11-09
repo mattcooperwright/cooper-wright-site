@@ -148,3 +148,16 @@ The pianohouse tile uses a 1000x1000 WebP grab of the page while playing (RIFF p
 
 ## 2026-11-01: Claude may merge pull requests
 The rule "Never push to or merge into main" is removed from `CLAUDE.md` at the owner's request. Work still happens on a branch with a pull request. Merging that pull request is now allowed when the owner asks for it.
+
+## 2026-11-09: Mesh Gradient Studio served from /mesh-gradient-studio/
+The studio arrived as a Vinext app built for Cloudflare Workers (Next-style `app/` router, React 19.2.6, Tailwind 4.2.1, a Worker entry, D1 and Drizzle scaffolding, ChatGPT sign-in helpers). It does not drop into this site. The site is static Astro, and its page types are md, html, mdx, react and external. A react page would run inside the site's layout and menu and share its global CSS, whereas the studio ships its own `globals.css` (a Tailwind import, body and `*` rules, Roboto Mono and flat Material tokens) that would clash with the site's. It would also pull in a second React and Tailwind version. The studio itself is one client-rendered page with no API calls, auth or database, so nothing about it needs a server.
+
+It is therefore built on its own and served as static files:
+- Source lives in `apps/mesh-gradient-studio/` with its own `package.json` and lockfile, every dependency pinned to an exact version. `tsconfig.json` excludes `apps/`, so `astro check` leaves it alone.
+- `next.config.ts` sets `output: "export"`, and `vite.config.ts` sets `base: "/mesh-gradient-studio/"` so asset URLs carry the subfolder. Vinext's `basePath` was tried first, but its prerender then skipped the page.
+- `npm run studio:build` (`scripts/build-studio.mjs`) builds the export and replaces `public/mesh-gradient-studio/`. That folder is committed, so the site's own `npm ci` and `astro build` need no second install on the host. The cost is that the build output is in git and goes stale until someone reruns the script after editing the studio. `tests/studio.test.ts` checks that the committed output exists, that its asset URLs stay inside the subfolder and exist, and that no font host or OpenAI URL has crept back in.
+- The page is not a manifest page, so it has no menu entry, tile, sitemap entry or RSS item. Giving it one needs a square grab for its tile (docs/manifest.md) and a decision on its section.
+
+Removed from the studio as OpenAI Sites hosting: `.openai/` (hosting.json), `app/chatgpt-auth.ts`, `build/sites-vite-plugin.ts`, the Worker entry, `db/`, `drizzle/`, `examples/d1/`, the Sites install and build scripts, the worker-based test, and the Cloudflare, Wrangler, Drizzle and ESLint dependencies. The `metadataBase` in `layout.tsx`, which pointed at the chatgpt.site host and made every Open Graph and icon URL absolute against it, now points at `https://matt.cooper-wright.com`, and the image and icon paths include `/mesh-gradient-studio/`. The unused starter SVGs in `public/` were dropped. Styling is unchanged, apart from the font source below.
+
+The studio's layout linked Roboto Mono from Google Fonts. Fonts here are self-hosted only, so the studio now carries the latin and latin-ext woff2 files from `@fontsource-variable/roboto-mono` 5.3.0 (the version the site already uses) in `apps/mesh-gradient-studio/app/fonts/`, declared under the family name `Roboto Mono` so its CSS is untouched. See docs/fonts.md.

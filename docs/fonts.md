@@ -48,3 +48,7 @@ src/assets/fonts/<family>/
     <family>-latin-ext-<tag>-normal.woff2
 ```
 In `fonts.ts`, point `package` at this directory as an **absolute path** (e.g. `fileURLToPath(new URL('../assets/fonts/<family>', import.meta.url))`), not a relative one — it has to resolve the same way for `font-faces.ts`'s `require.resolve` (anchored at `src/lib/`) and for Astro's local font provider (which resolves relative to the project root), and an absolute path is the only thing both agree on. Overused Grotesk (`display` role) is the example of this pattern.
+
+## Fonts outside the Astro build
+
+The Mesh Gradient Studio (`apps/mesh-gradient-studio/`, served at `/mesh-gradient-studio/`) is a separate build and does not use the Astro Fonts API. It carries a copy of the latin and latin-ext Roboto Mono woff2 files from `@fontsource-variable/roboto-mono` 5.3.0, with the package's licence, in `app/fonts/`. `app/globals.css` declares them as `Roboto Mono`. When the site's Roboto Mono version changes, update these files too.
