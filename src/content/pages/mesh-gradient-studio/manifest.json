@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "title": "Mesh Gradient Studio",
+  "description": "Create, shape and export richly textured mesh gradients in high resolution.",
+  "date": "2026-11-09",
+  "type": "external",
+  "status": "published",
+  "section": "Experiments",
+  "url": "https://matt.cooper-wright.com/mesh-gradient-studio/",
+  "image": "/images/mesh-gradient-studio.webp",
+  "indexStyle": { "color": "#ffffff" }
+}

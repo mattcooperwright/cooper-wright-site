@@ -18,6 +18,7 @@ Matt Cooper-Wright's personal site. Astro 7 with React, MDX and Tailwind 4, buil
 - A react page with `hydrate: true` also needs a route shim, `src/pages/<slug>.astro` (see docs/manifest.md)
 - `src/lib/pages.ts` has status filtering, payload checks and menu grouping
 - `tests/` holds the Vitest tests
+- `apps/mesh-gradient-studio/` is a separate Vinext app, built to static files by `npm run studio:build` into `public/mesh-gradient-studio/` (committed). Rebuild after editing it. See docs/decisions.md, 2026-11-09.
 - `src/layouts/Base.astro` is the shared layout
 - `src/components/SiteMenu.astro` is the site menu (rail plus section menus), used by Base and HtmlShell
 - `src/pages/` has the routes: `index`, `[slug]`, `[sandboxed]` (html), `[section]`, `rss.xml`, `sitemap.xml`, `404`
