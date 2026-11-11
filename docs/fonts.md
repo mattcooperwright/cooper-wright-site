@@ -24,7 +24,7 @@ All are variable fonts covering their full weight range, except Gasoek One, whic
 1. List the roles in the page's manifest: `"fonts": ["serif", "poster"]`. Home and 404 have no manifest and pass `fonts={['body']}` to `Base.astro` instead.
 2. Style with the role token: the Tailwind utility `font-serif`, or `var(--font-serif)` in CSS or inline styles.
 
-Only the roles a page lists are loaded on that page. A role used without being listed falls back to the system font stack, so a missing entry shows up as the wrong typeface rather than a broken page. `Base.astro` sets body text to the body role, so a page that does not list `body` shows its text in the system stack, as the `hello` placeholder does.
+Only the roles a page lists are loaded on that page. A role used without being listed falls back to the system font stack, so a missing entry shows up as the wrong typeface rather than a broken page. `Base.astro` sets body text to the body role, so a page that does not list `body` shows its text in the system stack.
 
 ## How it works
 

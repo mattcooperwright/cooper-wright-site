@@ -6,6 +6,15 @@
   "type": "md",
   "status": "published",
   "section": "Writing",
-  "tags": ["rituals", "retrospectives", "teams"],
-  "source": "LinkedIn article, published 7 Oct 2026"
+  "tags": [
+    "rituals",
+    "retrospectives",
+    "teams"
+  ],
+  "source": "LinkedIn article, published 7 Oct 2026",
+  "indexStyle": {
+    "background": "#EEFF41",
+    "color": "#111111",
+    "fontFamily": "grotesque"
+  }
 }
