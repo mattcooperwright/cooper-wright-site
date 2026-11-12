@@ -12,6 +12,8 @@ export const FONT_ROLES = [
   'rounded',
   'grotesque',
   'plain',
+  'headline',
+  'editorial',
   'mono',
 ] as const;
 
@@ -134,6 +136,29 @@ export const FONT_FAMILIES: FontFamily[] = [
     stylesheets: ['wght.css'],
     weights: '100 900',
     fallback: 'sans-serif',
+  },
+  {
+    // Long-form posts: title, headings, date line and section chip. From the post
+    // design in Figma (docs/decisions.md, 2026-11-12).
+    role: 'headline',
+    family: 'Geologica',
+    package: '@fontsource-variable/geologica',
+    version: '5.3.0',
+    licence: 'OFL-1.1',
+    stylesheets: ['wght.css'],
+    weights: '100 900',
+    fallback: 'sans-serif',
+  },
+  {
+    // Long-form posts: body text and pull quotes.
+    role: 'editorial',
+    family: 'Piazzolla',
+    package: '@fontsource-variable/piazzolla',
+    version: '5.3.0',
+    licence: 'OFL-1.1',
+    stylesheets: ['wght.css', 'wght-italic.css'],
+    weights: '100 900',
+    fallback: 'serif',
   },
   {
     // The site menu, on every page. Also the face behind Tailwind's font-mono.

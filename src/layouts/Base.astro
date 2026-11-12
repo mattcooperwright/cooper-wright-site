@@ -14,6 +14,8 @@ interface Props {
   fonts?: FontRole[];
   // React pages bring their own layout, so main drops its width and padding.
   fullBleed?: boolean;
+  // Page background: white, or the light grey wash long-form posts use.
+  background?: 'white' | 'wash';
 }
 
 const { page } = Astro.props;
@@ -31,7 +33,7 @@ const current = Astro.url.pathname.replace(/\/$/, '');
     <HeadMeta title={title} description={description} page={page} />
     {fonts.map((role) => <Font cssVariable={fontVariable(role)} />)}
   </head>
-  <body class="font-body text-neutral-900 bg-white">
+  <body class={`font-body text-neutral-900 ${Astro.props.background === 'wash' ? 'bg-neutral-100' : 'bg-white'}`}>
     <SiteMenu groups={groups} current={current} />
     <main class={Astro.props.fullBleed ? undefined : 'mx-auto max-w-3xl px-4 pb-12'}>
       <slot />
