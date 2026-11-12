@@ -2,7 +2,7 @@ Large organisations often decide they need to become more innovative, and not in
 
 Culture is the harder problem, and culture comes from what leaders model.
 
-One behaviour has surfaced more than any other in this kind of work: the ability to act with confidence in the absence of certainty.
+One behaviour has surfaced more than any other in this kind of work: the ability to act on belief before there is proof.
 
 ## The wrong data at the right time
 
@@ -20,7 +20,7 @@ What leaders need to do instead is calibrate. The decision at each stage isn't "
 
 This is the logic Steve Blank formalised in customer development, and that the Lean Startup movement carried into mainstream product thinking. Validate assumptions with the smallest experiment that generates real signal, and skip the big bets. The idea transfers directly to how large organisations manage innovation investment. Point your resources at the biggest open questions. Build enough to generate momentum and confidence, then use that momentum to unlock the next stage.
 
-The funding follows the confidence. Leaders in large organisations can work this way, though the instinct runs the other way: to seek permission through volume of evidence rather than precision of proof. The shift is to manage confidence actively over time, in place of a single large bet on certainty that arrives too late to change anything.
+The funding follows the confidence. Leaders in large organisations can work this way, though the instinct runs the other way: to seek permission through volume of evidence rather than precision of proof. The shift is to manage confidence actively over time, in place of a single large bet on proof that arrives too late to change anything.
 
 ## The instinct underneath the process
 
@@ -36,4 +36,4 @@ The leaders who are most effective in creative and innovation work tend to have 
 
 Large organisations are extraordinarily good at replacing direct experience with mediated reports. Every layer of abstraction between a leader and a real person erodes a little of that calibration. Founder's instinct isn't magic. It's what is left when someone hasn't let that erosion happen.
 
-Confidence over certainty isn't a soft preference for ambiguity. It is a discipline that lets new and disruptive ideas flourish. Like any discipline, it is built through practice and not acquired with seniority. And it doesn't come from mountains of data.
+Belief before proof isn't a soft preference for ambiguity. It is a discipline that lets new and disruptive ideas flourish. Like any discipline, it is built through practice and not acquired with seniority. And it doesn't come from mountains of data.
