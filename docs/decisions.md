@@ -173,3 +173,14 @@ Choices in the server:
 - Colours are validated as 6-digit hex, 4 to 8 of them, the studio's limits. Presets are the studio's own colour sets, with no new palettes invented.
 - The server and its tests have their own `package.json`, with exact pins, and the same TypeScript and Node types as the studio. Root `vitest.config.ts` now excludes `apps/` so Vitest does not try to run the server's `node:test` files. The server's tests are not in the site's CI, which installs only the root package.
 
+
+## 2026-11-12: Long-form post style from Figma, with Geologica and Piazzolla
+Long-form md posts now follow a post design in Figma, the file "cooper-wright-site — Design System" in the owner's IDEO Figma org. It holds the colour variables (ink, muted, rule, wash, paper), the post text styles and a desktop and phone frame. Change the design there first, then update `src/layouts/PostLayout.astro` to match.
+
+What changed on the site:
+- Two new font roles, added at the owner's request: `headline` (Geologica) for the title, headings, date line and section chip, and `editorial` (Piazzolla, with italics) for body text and pull quotes. Both are pinned Fontsource packages, 5.3.0, OFL-1.1. Only md posts load them.
+- md posts sit on the grey wash (`bg-neutral-100`, Figma `wash`) through a new `background` prop on `Base.astro`. Other pages stay white.
+- The back link is a small white section chip, without the arrow. Tags are no longer shown on the post; they stay in the manifest for RSS.
+- The reading column is 40rem (640px), down from 65ch. Blockquotes are 28px italic at 1.3 line height, as pull quotes.
+
+This applies to every md post, not only the newest. The `serif` and `display` roles stay for the pages that list them.

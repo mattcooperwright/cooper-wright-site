@@ -16,7 +16,7 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `status` | `published`, `unlisted` or `draft` | no | `published` | See [Status](#status). |
 | `section` | `Writing`, `Projects` or `Experiments` | no | | Menu group. Pages without one go under "More". |
 | `updated` | date | no | | Date of the last meaningful change. |
-| `tags` | array of strings | no | | Shown on md posts and as RSS categories. |
+| `tags` | array of strings | no | | Used as RSS categories. Not shown on md posts. |
 | `menuOrder` | number | no | | Lower numbers come first within a menu group. Pages without one follow, by date. |
 | `navTheme` | `light`, `dark` or `auto` | no | `auto` | No longer used: the menu is near-black on every page (docs/decisions.md, 2026-10-17). Kept so existing manifests stay valid. |
 | `image` | path | no | | Site-root path to a file in `public/`, such as `/images/tek-tek.webp`. Fills the page's home page tile and becomes its absolute `og:image`. Give every Experiments page one, as a square WebP. See [Home page tile](#home-page-tile). |
@@ -24,7 +24,7 @@ The schema lives in `src/lib/manifest.ts` and is checked at build time. Unknown 
 | `url` | http or https URL | external only | | Required when `type` is `external` and rejected for every other type. |
 | `source` | string | no | `manual` | Where the page came from, for example a publisher tool. |
 | `hydrate` | boolean | no | `false` | React pages only. Set it when the component uses state, effects or animation, and add a route shim (see the react example). |
-| `fonts` | array of font roles | no | `[]` | Roles this page loads: `display`, `body`, `serif`, `geometric`, `poster`, `humanist`, `rounded`, `grotesque`. See `docs/fonts.md`. |
+| `fonts` | array of font roles | no | `[]` | Roles this page loads: `display`, `body`, `serif`, `geometric`, `poster`, `humanist`, `rounded`, `grotesque`, `plain`, `headline`, `editorial`. See `docs/fonts.md`. |
 
 ## Status
 
@@ -40,7 +40,7 @@ The sitemap (`/sitemap.xml`) is built from `getListedPages()` in `src/lib/pages.
 
 | Type | Payload | Renders as | Who may submit |
 | --- | --- | --- | --- |
-| `md` | `index.md` | Post layout: title, UK date, updated date, tags, reading time, link to section. Body in the serif role, headings in the display role. | anyone, including chat and machine senders |
+| `md` | `index.md` | Post layout on a light grey page: section chip linking back, title, UK date, updated date and reading time. Body and pull quotes in the editorial role, headings in the headline role. | anyone, including chat and machine senders |
 | `html` | `index.html` | Sandboxed shell: a slim bar, then the payload in a `srcdoc` iframe with `sandbox="allow-scripts"`. | anyone, including chat and machine senders |
 | `external` | none | A menu and index link to `url`. | anyone, including chat and machine senders |
 | `mdx` | `index.mdx` | Simple article layout. | human pull request only |

@@ -19,6 +19,8 @@
   --font-rounded: var(--webfont-rounded, var(--font-sans));
   --font-grotesque: var(--webfont-grotesque, var(--font-sans));
   --font-plain: var(--webfont-plain, var(--font-sans));
+  --font-headline: var(--webfont-headline, var(--font-sans));
+  --font-editorial: var(--webfont-editorial, var(--font-system-serif));
   --font-mono: var(--webfont-mono, var(--font-system-mono));
 }
 
