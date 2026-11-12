@@ -28,11 +28,11 @@ There is a third dimension, and I've found it the hardest to raise in a room of 
 
 In a working session with a senior leader, one person said something that stayed with me. They had worked with many agencies, received a lot of data, and seen plenty of pictures of what was happening in the world. What they rarely got was a sense of *why* things were happening. That, they said, only came from genuine immersion: time in real contexts, understanding the texture behind an insight, staying with the material long enough for something to shift.
 
-What they described has a name. Michael Polanyi called it tacit knowledge, the kind of understanding that can't be fully articulated and accumulates through direct experience rather than instruction. His formulation was precise: we know more than we can tell. It lives in the hands of a skilled craftsperson, or in the judgement of a clinician who can't fully explain why a diagnosis feels right, but is.
+What they described has a name. Michael Polanyi called it tacit knowledge, the kind of understanding that can't be fully articulated and accumulates through direct experience rather than instruction. His formulation was precise: we know more than we can tell. It lives in the hands of a skilled craftsperson, or in the judgement of an experienced engineer who can't fully explain why a design feels wrong, but does.
 
 For designers this isn't a foreign idea. It's how we learn. Design education is built around tacit acquisition: you develop judgement through repeated exposure, critique and making, rather than by reading about it.
 
-The leaders who are most effective in creative and innovation work tend to have kept this capacity alive. They still go on home visits. They talk directly to customers. They listen for stories as well as data. They have an instinct for staying calibrated, for keeping an inner sense of what's real.
+The leaders who are most effective in creative and innovation work tend to have kept this capacity alive. They still spend time in the field. They talk directly to customers. They listen for stories as well as data. They have an instinct for staying calibrated, for keeping an inner sense of what's real.
 
 Large organisations are extraordinarily good at replacing direct experience with mediated reports. Every layer of abstraction between a leader and a real person erodes a little of that calibration. Founder's instinct isn't magic. It's what is left when someone hasn't let that erosion happen.
 
